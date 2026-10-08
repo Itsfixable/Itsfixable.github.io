@@ -1,0 +1,94 @@
+# Deploy the Next.js static export to GitHub Pages.
+#
+# REQUIRED ONE-TIME SETUP: in the repository settings, Pages → Build and
+# deployment → Source must be set to "GitHub Actions". With the default
+# "Deploy from a branch" source this workflow will build and upload an
+# artifact, and then the deploy job will fail.
+
+name: Deploy to GitHub Pages
+
+on:
+  # The default branch. Rename here if the default branch is not `main`.
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a newer push supersedes an in-flight run.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # GitHub Pages serves a *project* site from https://<user>.github.io/<repo>,
+      # so every asset URL needs a /<repo> prefix baked in at build time. A
+      # *user* site (a repo literally named <user>.github.io) is served from the
+      # domain root and must get an empty prefix instead. Getting this backwards
+      # is the classic "unstyled page, no JS" Pages failure.
+      - name: Compute base path
+        id: basepath
+        run: |
+          set -euo pipefail
+          repo="${{ github.event.repository.name }}"
+          if [ -z "$repo" ]; then
+            repo="${GITHUB_REPOSITORY##*/}"
+          fi
+          case "$repo" in
+            *.github.io)
+              base=""
+              ;;
+            *)
+              base="/$repo"
+              ;;
+          esac
+          echo "repo=$repo" >> "$GITHUB_OUTPUT"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "repo=$repo -> NEXT_PUBLIC_BASE_PATH='$base'"
+
+      - name: Build static export
+        env:
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.basepath.outputs.base }}
+        run: npm run build
+
+      # Pages runs the upload through Jekyll unless told otherwise, and Jekyll
+      # drops directories beginning with an underscore — i.e. all of /_next.
+      - name: Disable Jekyll processing
+        run: touch out/.nojekyll
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

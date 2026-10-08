@@ -1,5 +1,6 @@
 import { Nav } from "@/components/Nav";
 import { CommandPalette } from "@/components/CommandPalette";
+import { MainContent } from "@/components/MainContent";
 import { Hero } from "@/sections/Hero";
 import { About } from "@/sections/About";
 import { EcoPulse } from "@/sections/EcoPulse";
@@ -17,7 +18,7 @@ export default function Page() {
     <>
       <Nav />
       <CommandPalette />
-      <main className="flex-1">
+      <MainContent>
         <Hero />
         <About />
         <EcoPulse />
@@ -25,7 +26,7 @@ export default function Page() {
         <Timeline />
         <GitHub />
         <Contact />
-      </main>
+      </MainContent>
     </>
   );
 }

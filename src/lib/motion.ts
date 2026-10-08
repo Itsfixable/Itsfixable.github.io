@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useLayoutEffect } from "react";
 import type { Transition, Variants } from "framer-motion";
 import { useIsCalm } from "@/store/ui";
 
@@ -12,15 +13,29 @@ import { useIsCalm } from "@/store/ui";
  * parallax and stagger are not.
  */
 
+/**
+ * `useLayoutEffect` on the client, `useEffect` during the static prerender
+ * (where `useLayoutEffect` would warn — there is no paint to get ahead of).
+ *
+ * Picking the hook at module scope is not the same thing as branching rendered
+ * markup on `typeof window`: the tree React produces is identical either way.
+ * This only decides whether a pre-paint correction (which mode is active,
+ * whether a pinned layout fits) lands before or after the first paint —
+ * before is what every such correction wants, so the user never sees one
+ * frame of the wrong state.
+ */
+export const useIsoLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
+
 export const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 export const EASE_IN_OUT = [0.65, 0, 0.35, 1] as const;
 
 export const springs = {
-  soft: { type: "spring", stiffness: 120, damping: 20, mass: 0.8 },
-  snappy: { type: "spring", stiffness: 320, damping: 28 },
+  soft: { type: "spring" as const, stiffness: 120, damping: 20, mass: 0.8 },
+  snappy: { type: "spring" as const, stiffness: 320, damping: 28 },
   /** For scroll-linked values: no overshoot, just smoothing. */
   scrub: { stiffness: 140, damping: 30, restDelta: 0.001 },
-} satisfies Record<string, object>;
+} satisfies Record<string, Transition>;
 
 /** Durations in seconds, keyed by how far the thing has to travel. */
 export const durations = { fast: 0.25, base: 0.5, slow: 0.9 } as const;

@@ -1,14 +1,11 @@
 "use client";
 
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect } from "react";
 import { QueryProvider } from "./QueryProvider";
 import { LenisProvider } from "./LenisProvider";
 import { useUiStore } from "@/store/ui";
 import { REDUCED_MOTION_QUERY } from "@/lib/motion-mode";
-
-/** useLayoutEffect commits before paint; on the server there is no paint. */
-const useIsomorphicLayoutEffect =
-  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+import { useIsoLayoutEffect } from "@/lib/motion";
 
 /**
  * Corrects the store from localStorage + the OS motion preference, and keeps
@@ -19,7 +16,7 @@ const useIsomorphicLayoutEffect =
  * server and first client render agree, there is nothing to mismatch.
  */
 function UiSync() {
-  useIsomorphicLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     useUiStore.getState().syncFromEnvironment();
   }, []);
 
