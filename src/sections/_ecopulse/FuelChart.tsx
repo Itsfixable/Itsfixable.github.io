@@ -189,9 +189,23 @@ export function FuelChart() {
         </ul>
       </div>
 
-      {/* The numbers, reachable without the SVG. */}
-      <table className="sr-only">
-        <caption>
+      {/*
+        The numbers, reachable without the SVG. Two things fight the 1px box
+        Tailwind's `sr-only` is trying to clip this down to:
+          1. `table-layout: auto` (the default) treats an explicit width as a
+             minimum, not a cap, and lays the table out at its content's
+             natural width — `table-fixed` stops that.
+          2. `sr-only` also sets `white-space: nowrap` on the table, which the
+             <caption> inherits, forcing its whole sentence onto one
+             unbreakable line. A table's wrapper box must be at least as wide
+             as its caption's longest line *regardless* of table-layout, so
+             that single long line alone was pushing this table out to its
+             content width — `whitespace-normal` on the caption lets it wrap
+             instead. Together these were inflating the page's horizontal
+             scrollWidth by ~25px on mobile, even though nothing was visible.
+      */}
+      <table className="sr-only table-fixed">
+        <caption className="whitespace-normal">
           {headlineMetric.label} by week, in {chart.unit}
           {chart.isPlaceholder ? " (illustrative values)" : ""}
         </caption>
