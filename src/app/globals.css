@@ -1,26 +1,196 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ===========================================================================
+   Design tokens
+   Dark theme, one bold accent (acid lime). The accent is load-bearing: it
+   marks the single most important thing in a section and nothing else.
+   Everything structural is a neutral.
+   ========================================================================= */
+
+@theme {
+  /* Neutrals, darkest to lightest */
+  --color-bg: #08090a;
+  --color-surface: #101214;
+  --color-surface-2: #171a1d;
+  --color-surface-3: #202428;
+  --color-line: #262b30;
+  --color-faint: #5c636a;
+  --color-muted: #8e959c;
+  --color-text: #eceef0;
+
+  /* The one accent */
+  --color-accent: #c8ff3d;
+  --color-accent-dim: #8bb52a;
+  --color-accent-soft: #1d2410;
+  /* Text/icon colour to put *on* an accent fill */
+  --color-accent-ink: #0a0c05;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+
+  /* Fluid display sizes — the hero and section headings use these */
+  --text-display: clamp(2.75rem, 11vw, 9rem);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.04em;
+  --text-headline: clamp(2rem, 5vw, 3.75rem);
+  --text-headline--line-height: 1.02;
+  --text-headline--letter-spacing: -0.03em;
+
+  --radius-card: 1rem;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
 }
 
-@media (prefers-color-scheme: dark) {
+/* `calm:` variant — style anything differently when motion is dialled down.
+   e.g. <div className="blur-xl calm:blur-none"> */
+@custom-variant calm ([data-motion="calm"] &);
+
+/* ===========================================================================
+   Base
+   ========================================================================= */
+
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: dark;
+    /* Lenis drives scrolling; native smooth scroll would fight it. */
+    scroll-behavior: auto;
+  }
+
+  html,
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    /* Horizontal overflow is a constant hazard with pinned/parallax sections. */
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Every section is a scroll target for the nav and the ⌘K palette. */
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ===========================================================================
+   Motion
+   Two independent brakes, both of which must work on their own:
+   1. the OS preference (for users who never touch our toggle)
+   2. [data-motion="calm"] (our in-page toggle, set before first paint)
+   This only governs CSS animation. JS-driven motion reads the Zustand store.
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+[data-motion="calm"] *,
+[data-motion="calm"] *::before,
+[data-motion="calm"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* ===========================================================================
+   Utilities shared across sections
+   ========================================================================= */
+
+/* The page's one horizontal rhythm. Every section uses it so edges line up. */
+@utility shell {
+  width: 100%;
+  max-width: 78rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (width >= 48rem) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* Small monospace kicker above a heading. */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+/* 1px rule that fades out — used to separate sections without a hard line. */
+@utility hairline {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-line) 15%,
+    var(--color-line) 85%,
+    transparent
+  );
+}
+
+/* Standard vertical breathing room for a full section. */
+@utility section-y {
+  padding-block: 6rem;
+  @media (width >= 48rem) {
+    padding-block: 8.5rem;
+  }
+}
+
+/* Subtle card surface. */
+@utility card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+}
+
+/* ===========================================================================
+   Lenis
+   ========================================================================= */
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
