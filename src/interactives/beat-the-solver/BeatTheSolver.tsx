@@ -266,9 +266,9 @@ export function BeatTheSolver() {
           <p className={`mt-1 text-5xl font-semibold tabular-nums ${tied ? "text-accent" : "text-text"}`}>
             {complete ? formatL(result.dieselL) : "—"}
           </p>
-          <div className="relative mt-3 h-2 rounded-full bg-surface-3">
+          <div className="relative mt-3 h-2 rounded-none bg-surface-3">
             <div
-              className={`h-full rounded-full ${tied ? "bg-accent" : "bg-text/70"} ${calm ? "" : "transition-[width] duration-300"}`}
+              className={`h-full rounded-none ${tied ? "bg-accent" : "bg-ink"} ${calm ? "" : "transition-[width] duration-300"}`}
               style={{ width: complete ? `${meterPct}%` : "0%" }}
             />
             <span
@@ -298,9 +298,9 @@ export function BeatTheSolver() {
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-2 p-3 sm:p-4">
           <ul className="flex flex-wrap gap-x-3 gap-y-1 rounded-lg bg-surface/85 px-2.5 py-1.5 text-[0.6875rem] text-muted">
-            <li className="flex items-center gap-1.5"><span aria-hidden="true" className="size-2 rounded-full bg-sun" />Sun</li>
-            <li className="flex items-center gap-1.5"><span aria-hidden="true" className="size-2 rounded-full bg-accent" />Wind, battery, your loads</li>
-            <li className="flex items-center gap-1.5"><span aria-hidden="true" className="size-2 rounded-full bg-danger" />Diesel</li>
+            <li className="flex items-center gap-1.5"><span aria-hidden="true" className="size-2.5 border border-ink bg-m-yellow" />Sun</li>
+            <li className="flex items-center gap-1.5"><span aria-hidden="true" className="size-2.5 border border-ink bg-accent" />Wind, battery, your loads</li>
+            <li className="flex items-center gap-1.5"><span aria-hidden="true" className="size-2.5 border border-ink bg-danger" />Diesel</li>
           </ul>
           <p className="rounded-lg bg-surface/85 px-2.5 py-1.5 text-[0.6875rem] text-muted [@media(pointer:coarse)]:hidden">
             Drag to turn · hover a beacon
@@ -340,11 +340,11 @@ export function BeatTheSolver() {
               {clean.map((kw, h) => (
                 <div key={h} className={`relative h-full rounded-sm ${h === hour ? "bg-text/[0.07]" : ""}`}>
                   <div
-                    className="absolute inset-x-0 bottom-0 rounded-t-sm bg-sun/60"
+                    className="absolute inset-x-0 bottom-0 bg-sun"
                     style={{ height: `${(kw / CHART_MAX) * 100}%` }}
                   />
                   <div
-                    className="absolute inset-x-0 border-t-2 border-dashed border-muted/60"
+                    className="absolute inset-x-0 border-t-2 border-dashed border-ink"
                     style={{ bottom: `${(baseLoadKw(h) / CHART_MAX) * 100}%` }}
                   />
                 </div>
@@ -384,7 +384,7 @@ export function BeatTheSolver() {
                       on
                         ? "border-accent bg-accent"
                         : "border-line bg-surface-2 hover:border-faint hover:bg-surface-3"
-                    } ${h === hour ? "ring-2 ring-text/35 ring-offset-1 ring-offset-surface" : ""}`}
+                    } ${h === hour ? "outline-[3px] outline-ink outline-offset-1 outline" : ""}`}
                   />
                 ))}
               </div>
@@ -393,12 +393,15 @@ export function BeatTheSolver() {
 
           {/* Where the diesel burns */}
           <div className="mt-3 grid grid-cols-[7.5rem_minmax(0,1fr)] items-start gap-3">
-            <p className="pt-1 font-mono text-[0.625rem] tracking-[0.1em] text-danger uppercase">Diesel burned</p>
+            <p className="flex items-center gap-1.5 pt-1 font-mono text-[0.625rem] tracking-[0.1em] text-faint uppercase">
+              <span aria-hidden="true" className="size-2.5 shrink-0 border border-ink bg-danger" />
+              Diesel burned
+            </p>
             <div className="grid h-12 grid-cols-24 items-start gap-0.5" aria-hidden="true">
               {result.hours.map((hourResult, h) => (
                 <div key={h} className={`h-full rounded-sm ${h === hour ? "bg-text/[0.07]" : ""}`}>
                   <div
-                    className={`w-full rounded-b-sm bg-danger/70 ${calm ? "" : "transition-[height] duration-300"}`}
+                    className={`w-full bg-danger ${calm ? "" : "transition-[height] duration-300"}`}
                     style={{ height: `${hourResult.dieselKw > 0.5 ? Math.max(8, (hourResult.dieselKw / dieselPeak) * 100) : 0}%` }}
                   />
                 </div>
@@ -432,21 +435,21 @@ export function BeatTheSolver() {
           <button
             type="button"
             onClick={() => load(FIXED_SCHEDULE)}
-            className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs font-medium text-text hover:border-faint"
+            className="rounded-none border border-line bg-surface px-3.5 py-1.5 text-xs font-medium text-text hover:border-faint"
           >
             Reset to the timer
           </button>
           <button
             type="button"
             onClick={() => load({ desal: hoursToRow([]), ice: hoursToRow([]) })}
-            className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs font-medium text-text hover:border-faint"
+            className="rounded-none border border-line bg-surface px-3.5 py-1.5 text-xs font-medium text-text hover:border-faint"
           >
             Clear
           </button>
           <button
             type="button"
             onClick={() => load(ECOPULSE_SCHEDULE, true)}
-            className="rounded-full bg-accent px-3.5 py-1.5 text-xs font-medium text-accent-ink hover:bg-accent-dim"
+            className="rounded-none bg-accent px-3.5 py-1.5 text-xs font-medium text-accent-ink hover:bg-accent-dim"
           >
             Show EcoPulse&rsquo;s plan
           </button>

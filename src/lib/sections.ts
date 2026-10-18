@@ -10,8 +10,6 @@ export type SectionId =
   | "experience"
   | "ecopulse"
   | "projects"
-  | "timeline"
-  | "github"
   | "contact";
 
 export type SectionMeta = {
@@ -31,9 +29,7 @@ export const sections: SectionMeta[] = [
   { id: "about", label: "About", title: "About Koji", keywords: ["bio", "who"] },
   { id: "experience", label: "Experience", title: "Experience", keywords: ["rox", "internship", "intern", "fbla", "hack club", "arduino", "query lab", "supabase", "tanstack"] },
   { id: "ecopulse", label: "EcoPulse", title: "EcoPulse case study", keywords: ["diesel", "dreamhacks", "41", "case study", "game", "solver"] },
-  { id: "projects", label: "Projects", title: "Projects", keywords: ["work", "korean quest", "hangul"] },
-  { id: "timeline", label: "Timeline", title: "Learning timeline", keywords: ["react", "typescript", "tailwind", "zustand", "tanstack", "tools"] },
-  { id: "github", label: "GitHub", title: "Live GitHub activity", keywords: ["repos", "repositories", "code"] },
+  { id: "projects", label: "Korean Quest", title: "Korean Quest", keywords: ["project", "korean", "hangul", "tracing", "fbla"] },
   { id: "contact", label: "Contact", title: "Contact", keywords: ["email", "hire", "resume", "linkedin"] },
 ];
 

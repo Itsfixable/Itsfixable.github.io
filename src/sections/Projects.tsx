@@ -3,12 +3,13 @@
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { projects } from "@/data/profile";
-import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
 import { useReveal } from "@/lib/motion";
-import { useIsCalm } from "@/store/ui";
-import { PinnedRail } from "./_projects/PinnedRail";
+import { sections } from "@/lib/sections";
+import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
+import { SectionRule } from "@/components/mondrian/SectionRule";
 import { ProjectCard } from "./_projects/ProjectCard";
-import { useCanPin } from "./_projects/usePinning";
+
+const META = sections.find((section) => section.id === "projects");
 
 const PLAYGROUND_HEIGHT = "36rem";
 
@@ -22,60 +23,40 @@ const HangulPlayground = dynamic(
 );
 
 /**
- * Projects, as a pinned horizontal rail — on a roomy viewport, in wild mode.
- *
- * Everywhere else (below `md`, and in calm mode at every width) the exact same
- * cards render as a plain vertical column in document flow: no sticky, no tall
- * spacer, no horizontal transform. `pinned` starts `false`, so the server
- * render, the first client render and the no-JS render all agree on the safe
- * stacked layout, and the one flag drives both the height and the motion —
- * they can never disagree and leave an empty gap behind.
+ * Projects without a case study of their own (EcoPulse has one), each shown
+ * as its card beside its interactive. Today that is Korean Quest.
  */
-export function Projects() {
-  const calm = useIsCalm();
-  const canPin = useCanPin();
-  const pinned = canPin && !calm;
+const listed = projects.filter((project) => !project.caseStudy);
 
+export function Projects() {
   const reveal = useReveal({ amount: 0.4 });
-  const total = projects.length;
 
   return (
-    <section id="projects" className="relative pb-24 md:pb-34">
-      <motion.header {...reveal} className="shell pt-24 pb-10 md:pt-34 md:pb-14">
-        <p className="eyebrow">Selected work</p>
-        <div className="mt-4 flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-          <h2 className="text-headline font-semibold text-text">Projects</h2>
-          <p className="font-mono text-xs tracking-[0.14em] text-faint uppercase">
-            {String(total).padStart(2, "0")} projects
-            {pinned ? " · scroll to pan" : ""}
-          </p>
-        </div>
-        <hr className="hairline mt-8" />
+    <section id="projects" className="shell section-y">
+      <SectionRule tone="yellow" />
+
+      <motion.header {...reveal} className="mt-14 md:mt-20">
+        <p className="eyebrow">Project</p>
+        <h2 className="mt-4 text-headline font-semibold text-text">{META?.title ?? "Projects"}</h2>
       </motion.header>
 
-      {pinned ? (
-        <PinnedRail projects={projects} />
-      ) : (
-        <ol className="shell flex flex-col gap-5">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={index}
-              total={total}
-              variant="stack"
-            />
-          ))}
-        </ol>
-      )}
-
-      {projects.some((project) => project.playable === "hangul") ? (
-        <div className="shell mt-5 md:mt-8">
-          <LazyMount minHeight={PLAYGROUND_HEIGHT} label="Learn some Hangul">
-            <HangulPlayground />
-          </LazyMount>
-        </div>
-      ) : null}
+      <div className="mt-12 flex flex-col gap-8 md:mt-16">
+        {listed.map((project, index) => (
+          <div
+            key={project.id}
+            className="grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start lg:gap-8"
+          >
+            <ol className="contents">
+              <ProjectCard project={project} index={index} total={listed.length} variant="stack" showName={false} />
+            </ol>
+            {project.playable === "hangul" ? (
+              <LazyMount minHeight={PLAYGROUND_HEIGHT} label="Learn some Hangul">
+                <HangulPlayground />
+              </LazyMount>
+            ) : null}
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

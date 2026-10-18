@@ -21,7 +21,7 @@ type ResumeButtonProps = {
 };
 
 export function ResumeButton({ tone = "ghost", size = "sm", className = "" }: ResumeButtonProps) {
-  const shape = "inline-flex shrink-0 items-center gap-2 rounded-full font-medium transition-colors";
+  const shape = "inline-flex shrink-0 items-center gap-2 rounded-none font-medium transition-colors";
   const sizing = size === "sm" ? "h-9 px-2.5 text-sm sm:px-3.5" : "h-11 px-5 text-base";
   // The label always shows; only the secondary badge/arrow drops out at 375px,
   // so the nav never crowds and the control is never a mystery icon.
@@ -54,8 +54,8 @@ export function ResumeButton({ tone = "ghost", size = "sm", className = "" }: Re
       rel="noreferrer noopener"
       className={`${shape} ${sizing} ${
         tone === "solid"
-          ? "bg-accent text-accent-ink hover:bg-accent-dim"
-          : "border border-line bg-surface-2 text-text hover:border-faint hover:bg-surface-3"
+          ? "border-2 border-ink bg-accent text-accent-ink hover:bg-accent-dim"
+          : "border-2 border-ink bg-surface text-text hover:bg-m-yellow"
       } ${className}`}
     >
       <IconFile className="shrink-0" />

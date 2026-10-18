@@ -6,6 +6,8 @@ import { experience, type ExperienceEntry } from "@/data/profile";
 import { revealVariants, staggerParent, useReveal, viewportOnce } from "@/lib/motion";
 import { sections } from "@/lib/sections";
 import { useIsCalm } from "@/store/ui";
+import { SectionRule } from "@/components/mondrian/SectionRule";
+import { TechChip } from "@/components/TechChip";
 import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
 
 const META = sections.find((section) => section.id === "experience");
@@ -53,7 +55,7 @@ function Entry({ entry }: { entry: ExperienceEntry }) {
           <motion.ul variants={child} className="mt-5 flex flex-col gap-2.5">
             {entry.highlights.map((highlight) => (
               <li key={highlight} className="flex items-baseline gap-3 text-base leading-relaxed text-text">
-                <span aria-hidden="true" className="size-1.5 shrink-0 translate-y-[-0.1em] rounded-full bg-accent" />
+                <span aria-hidden="true" className="size-1.5 shrink-0 translate-y-[-0.1em] rounded-none bg-accent" />
                 <span>{highlight}</span>
               </li>
             ))}
@@ -62,11 +64,8 @@ function Entry({ entry }: { entry: ExperienceEntry }) {
           {entry.stack.length > 0 ? (
             <motion.ul variants={child} className="mt-5 flex flex-wrap gap-2">
               {entry.stack.map((item) => (
-                <li
-                  key={item}
-                  className="rounded-full border border-line bg-surface-2 px-2.5 py-1 font-mono text-[0.6875rem] text-muted"
-                >
-                  {item}
+                <li key={item}>
+                  <TechChip name={item} />
                 </li>
               ))}
             </motion.ul>
@@ -90,7 +89,7 @@ export function Experience() {
 
   return (
     <section id="experience" className="shell section-y">
-      <hr className="hairline" />
+      <SectionRule tone="red" />
 
       <motion.header {...reveal} className="mt-14 md:mt-20">
         <p className="eyebrow">{META?.label ?? "Experience"}</p>

@@ -6,8 +6,6 @@ import { About } from "@/sections/About";
 import { Experience } from "@/sections/Experience";
 import { EcoPulse } from "@/sections/EcoPulse";
 import { Projects } from "@/sections/Projects";
-import { Timeline } from "@/sections/Timeline";
-import { GitHub } from "@/sections/GitHub";
 import { Contact } from "@/sections/Contact";
 
 /**
@@ -25,8 +23,6 @@ export default function Page() {
         <Experience />
         <EcoPulse />
         <Projects />
-        <Timeline />
-        <GitHub />
         <Contact />
       </MainContent>
     </>

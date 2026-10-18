@@ -2,37 +2,55 @@
 
 /* ===========================================================================
    Design tokens
-   "Paper and cobalt": a light theme on warm off-white paper, with one bold
-   accent (cobalt ink). The accent is load-bearing: it marks the single most
-   important thing in a section and nothing else. Everything structural is a
-   neutral. Contrast on --color-bg: text 16:1, muted 6.9:1, faint 4.9:1,
-   accent 6.3:1, white on accent 7:1.
+   Piet Mondrian: warm white canvas, black structural lines, and the three
+   primaries used as blocks. Blue is the interactive accent; red is reserved
+   for diesel/errors; yellow is decoration (black text on it, never yellow
+   text). Corners are square everywhere.
+   Contrast on --color-bg: text 17:1, muted 8:1, faint 4.9:1, blue 7.3:1,
+   red 4.8:1; white on blue 8:1; black on yellow 11.6:1.
+   Chart colours (validated with the dataviz checker, all pairs, light):
+   blue #1F4E9C, red #D3202A, ochre #B8860B (sun; needs labels/table).
    ========================================================================= */
 
 @theme {
-  /* Neutrals. The page is paper; surfaces step slightly lighter (cards) or
-     darker (chips, wells) from it. */
-  --color-bg: #f5f2ea;
-  --color-surface: #fdfbf7;
-  --color-surface-2: #efebe1;
-  --color-surface-3: #e7e2d5;
-  --color-line: #dcd6c7;
+  /* Canvas and neutrals */
+  --color-bg: #f7f5ee;
+  --color-surface: #fdfcf8;
+  --color-surface-2: #efece3;
+  --color-surface-3: #e5e1d5;
+  /* Fine dividers; the bold Mondrian lines use --color-ink. */
+  --color-line: #cfc9ba;
   --color-faint: #6c6961;
-  --color-muted: #55534d;
-  --color-text: #16171a;
+  --color-muted: #45433e;
+  --color-text: #111111;
+  --color-ink: #111111;
 
-  /* The one accent */
-  --color-accent: #2747d9;
-  --color-accent-dim: #1d36ad;
-  --color-accent-soft: #e3e8fb;
-  /* Text/icon colour to put *on* an accent fill */
+  /* Mondrian primaries, for blocks */
+  --color-m-red: #d3202a;
+  --color-m-blue: #1f4e9c;
+  --color-m-yellow: #f4c52d;
+
+  /* Interactive accent = Mondrian blue */
+  --color-accent: #1f4e9c;
+  --color-accent-dim: #163a75;
+  --color-accent-soft: #e2e9f5;
   --color-accent-ink: #ffffff;
 
-  /* Errors only (failed requests in the Query lab). Not a second accent. */
-  --color-danger: #b42318;
-  --color-danger-soft: #fbe8e5;
-  /* Data only: sunlight in the EcoPulse game's supply chart. */
-  --color-sun: #e3a92b;
+  /* Errors and diesel = Mondrian red */
+  --color-danger: #d3202a;
+  --color-danger-soft: #fbe3e1;
+  /* Data only: sunlight in charts (ochre, not the decorative yellow). */
+  --color-sun: #b8860b;
+
+  /* Square corners, like the paintings. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
@@ -45,7 +63,7 @@
   --text-headline--line-height: 1.02;
   --text-headline--letter-spacing: -0.03em;
 
-  --radius-card: 1rem;
+  --radius-card: 0;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -89,14 +107,13 @@
   }
 
   ::selection {
-    background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    background-color: var(--color-m-yellow);
+    color: var(--color-ink);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 3px;
-    border-radius: 2px;
+    outline: 3px solid var(--color-ink);
+    outline-offset: 2px;
   }
 
   h1, h2, h3, h4 {
@@ -163,13 +180,7 @@
 @utility hairline {
   height: 1px;
   border: 0;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--color-line) 15%,
-    var(--color-line) 85%,
-    transparent
-  );
+  background: var(--color-line);
 }
 
 /* Standard vertical breathing room for a full section. */
@@ -183,8 +194,8 @@
 /* Subtle card surface. */
 @utility card {
   background-color: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-card);
+  border: 3px solid var(--color-ink);
+  border-radius: 0;
 }
 
 /* ===========================================================================

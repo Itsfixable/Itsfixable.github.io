@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import type { FocusEventHandler, ReactNode } from "react";
 import { PLACEHOLDER, type Project } from "@/data/profile";
 import { useReveal } from "@/lib/motion";
+import { TechChip } from "@/components/TechChip";
 
 /**
  * One project. Identical content in both layouts — the only difference is the
@@ -19,6 +20,8 @@ type ProjectCardProps = {
   variant: ProjectCardVariant;
   /** The rail uses this to scroll a keyboard-focused card back into view. */
   onFocus?: FocusEventHandler<HTMLLIElement>;
+  /** False when the surrounding section already shows the project's name. */
+  showName?: boolean;
 };
 
 const statusMeta: Record<
@@ -41,7 +44,7 @@ const isGap = (value: string) => value === PLACEHOLDER;
  */
 function Gap() {
   return (
-    <span className="inline-flex items-center rounded border border-dashed border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.625rem] tracking-[0.12em] text-faint uppercase">
+    <span className="inline-flex items-center rounded-none border border-dashed border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.625rem] tracking-[0.12em] text-faint uppercase">
       {PLACEHOLDER}
     </span>
   );
@@ -66,7 +69,7 @@ function Meta({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function ProjectCard({ project, index, total, variant, onFocus }: ProjectCardProps) {
+export function ProjectCard({ project, index, total, variant, onFocus, showName = true }: ProjectCardProps) {
   // Called unconditionally; `variant` never changes for a mounted card, because
   // the rail and the stacked column are separate subtrees.
   const reveal = useReveal({ index, distance: 20, amount: 0.2 });
@@ -86,27 +89,34 @@ export function ProjectCard({ project, index, total, variant, onFocus }: Project
     >
       <article className="card flex h-full flex-col gap-5 overflow-hidden p-6 md:gap-6 md:p-8">
         <div className="flex items-start justify-between gap-4">
-          <p className="font-mono text-xs tabular-nums text-muted">
-            {pad(index + 1)}
-            <span className="text-line"> / </span>
-            <span className="text-faint">{pad(total)}</span>
-          </p>
+          {/* A counter only means something when there is more than one card. */}
+          {total > 1 ? (
+            <p className="font-mono text-xs tabular-nums text-muted">
+              {pad(index + 1)}
+              <span className="text-line"> / </span>
+              <span className="text-faint">{pad(total)}</span>
+            </p>
+          ) : (
+            <span />
+          )}
           <p
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.14em] uppercase ${status.className}`}
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-none border px-2.5 py-1 font-mono text-[0.625rem] tracking-[0.14em] uppercase ${status.className}`}
           >
             <span
               aria-hidden="true"
-              className={`size-1.5 rounded-full ${status.dotClassName ?? "bg-current"}`}
+              className={`size-1.5 rounded-none ${status.dotClassName ?? "bg-current"}`}
             />
             {status.label}
           </p>
         </div>
 
         <div>
-          <h3 className="text-3xl font-semibold tracking-[-0.03em] text-balance md:text-4xl">
-            {project.name}
-          </h3>
-          <p className="mt-3 max-w-[38ch] text-base text-muted md:text-lg">{project.tagline}</p>
+          {showName ? (
+            <h3 className="text-3xl font-semibold tracking-[-0.03em] text-balance md:text-4xl">
+              {project.name}
+            </h3>
+          ) : null}
+          <p className={`${showName ? "mt-3" : ""} max-w-[38ch] text-base text-muted md:text-lg`}>{project.tagline}</p>
         </div>
 
         <dl className="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -124,7 +134,7 @@ export function ProjectCard({ project, index, total, variant, onFocus }: Project
               key={`${project.id}-highlight-${i}`}
               className="flex items-baseline gap-3 text-sm text-text"
             >
-              <span aria-hidden="true" className="size-1 shrink-0 rounded-full bg-faint" />
+              <span aria-hidden="true" className="size-1 shrink-0 rounded-none bg-faint" />
               {isGap(highlight) ? <Gap /> : <span>{highlight}</span>}
             </li>
           ))}
@@ -137,9 +147,7 @@ export function ProjectCard({ project, index, total, variant, onFocus }: Project
                 {isGap(item) ? (
                   <Gap />
                 ) : (
-                  <span className="inline-flex rounded-full border border-line bg-surface-2 px-2.5 py-1 font-mono text-[0.6875rem] text-muted">
-                    {item}
-                  </span>
+                  <TechChip name={item} />
                 )}
               </li>
             ))}
@@ -180,15 +188,15 @@ function CardLink({
 }) {
   const className =
     tone === "primary"
-      ? "bg-accent text-accent-ink hover:bg-accent-dim"
-      : "border border-line bg-surface-2 text-text hover:border-faint hover:bg-surface-3";
+      ? "border-2 border-ink bg-accent text-accent-ink hover:bg-accent-dim"
+      : "border-2 border-ink bg-surface text-text hover:bg-m-yellow";
 
   return (
     <a
       href={href}
       target="_blank"
       rel="noreferrer noopener"
-      className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${className}`}
+      className={`inline-flex items-center gap-2 rounded-none px-4 py-2 text-sm font-medium transition-colors ${className}`}
     >
       {children}
       <ExternalArrow />

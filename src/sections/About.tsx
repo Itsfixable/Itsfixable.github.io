@@ -10,6 +10,7 @@ import {
 } from "@/lib/motion";
 import { sections } from "@/lib/sections";
 import { useIsCalm } from "@/store/ui";
+import { SectionRule } from "@/components/mondrian/SectionRule";
 import {
   PlaceholderParagraph,
   ValueOrPlaceholder,
@@ -36,7 +37,7 @@ export function About() {
 
   return (
     <section id="about" className="shell section-y">
-      <hr className="hairline" />
+      <SectionRule tone="blue" />
 
       <div className="mt-14 grid gap-12 md:mt-20 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-20">
         <motion.div {...revealHeading}>

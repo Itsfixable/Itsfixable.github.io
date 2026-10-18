@@ -19,10 +19,15 @@ import { HALF, SITES, heightAt, type Site } from "./terrain";
  * reason.
  */
 
+/*
+ * Mondrian primaries. On the dark sea the sun uses the bright yellow (the
+ * ochre chart colour is for the light page); blue is lifted a little so its
+ * emissive glow still reads at night.
+ */
 const COLOR = {
-  clean: "#3f5fe6",
-  diesel: "#e0442f",
-  sun: "#e3a92b",
+  clean: "#2a5fbf",
+  diesel: "#d3202a",
+  sun: "#f4c52d",
   loadOn: "#f2ece0",
   loadLine: "#b9b1a1",
   off: "#8f8a80",
@@ -389,7 +394,7 @@ function Marker({
         >
           <div className="pointer-events-none flex flex-col gap-0.5 whitespace-nowrap rounded-lg border border-line bg-surface/95 px-3 py-2 text-[13px] text-text shadow-lg">
             <span className="flex items-center gap-1.5 font-medium">
-              <span className="size-2 rounded-full" style={{ background: active ? color : COLOR.off }} />
+              <span className="size-2 rounded-none" style={{ background: active ? color : COLOR.off }} />
               {site.label}
             </span>
             {detail.map((line) => (

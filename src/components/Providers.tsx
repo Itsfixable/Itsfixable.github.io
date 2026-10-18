@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { QueryProvider } from "./QueryProvider";
 import { LenisProvider } from "./LenisProvider";
 import { useUiStore } from "@/store/ui";
 import { REDUCED_MOTION_QUERY } from "@/lib/motion-mode";
@@ -32,9 +31,9 @@ function UiSync() {
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <QueryProvider>
+    <>
       <UiSync />
       <LenisProvider>{children}</LenisProvider>
-    </QueryProvider>
+    </>
   );
 }

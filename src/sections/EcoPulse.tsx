@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { ecoPulse, projects } from "@/data/profile";
 import { revealVariants, staggerParent, viewportOnce } from "@/lib/motion";
 import { useIsCalm } from "@/store/ui";
-import { FuelChart } from "./_ecopulse/FuelChart";
+import { SectionRule } from "@/components/mondrian/SectionRule";
+import { TechChip } from "@/components/TechChip";
 import { MetricCounter } from "./_ecopulse/MetricCounter";
 import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
 
@@ -51,7 +52,7 @@ export function EcoPulse() {
   return (
     <section id="ecopulse" className="relative">
       <div className="shell">
-        <hr className="hairline" />
+        <SectionRule tone="blue" />
       </div>
 
       <div className="shell section-y">
@@ -78,7 +79,7 @@ export function EcoPulse() {
               href={ecoPulse.demo}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex max-w-full items-center gap-3 rounded-full border border-line bg-surface px-5 py-3 text-sm font-medium text-text transition-colors hover:border-faint hover:bg-surface-2 sm:px-6"
+              className="group inline-flex max-w-full items-center gap-3 rounded-none border border-line bg-surface px-5 py-3 text-sm font-medium text-text transition-colors hover:border-faint hover:bg-surface-2 sm:px-6"
             >
               <span className="whitespace-nowrap">Live demo</span>
               <span className="sr-only">(opens in a new tab)</span>
@@ -192,17 +193,6 @@ export function EcoPulse() {
           </div>
         </motion.div>
 
-        {/* ------------------------------------------------- the chart */}
-        <motion.div
-          initial="hidden"
-          whileInView="shown"
-          viewport={viewportOnce}
-          variants={child}
-          className="mt-16 md:mt-24"
-        >
-          <FuelChart />
-        </motion.div>
-
         {/* ------------------------------------------------- the game */}
         <div className="mt-16 md:mt-24">
           <LazyMount minHeight={GAME_HEIGHT} label="Can you match the solver?">
@@ -224,12 +214,8 @@ export function EcoPulse() {
             </motion.p>
             <ul className="flex flex-wrap gap-2">
               {project.stack.map((item) => (
-                <motion.li
-                  key={item}
-                  variants={child}
-                  className="rounded-full border border-line bg-surface-2 px-3 py-1 font-mono text-xs text-muted"
-                >
-                  {item}
+                <motion.li key={item} variants={child}>
+                  <TechChip name={item} />
                 </motion.li>
               ))}
             </ul>

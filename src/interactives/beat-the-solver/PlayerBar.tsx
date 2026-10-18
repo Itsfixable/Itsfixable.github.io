@@ -68,7 +68,7 @@ const IconRepeat = () => (
 );
 
 const transport =
-  "flex size-9 items-center justify-center rounded-full text-muted transition-colors hover:text-text disabled:opacity-35 disabled:hover:text-muted";
+  "flex size-9 items-center justify-center rounded-none text-muted transition-colors hover:text-text disabled:opacity-35 disabled:hover:text-muted";
 
 /**
  * A music-player style transport for the day: previous / play / next and a
@@ -100,7 +100,7 @@ export function PlayerBar({
           className={`${transport} relative ${repeat ? "text-accent hover:text-accent" : ""}`}
         >
           <IconRepeat />
-          {repeat ? <span aria-hidden="true" className="absolute bottom-0.5 size-1 rounded-full bg-accent" /> : null}
+          {repeat ? <span aria-hidden="true" className="absolute bottom-0.5 size-1 rounded-none bg-accent" /> : null}
         </button>
         <button
           type="button"
@@ -115,7 +115,7 @@ export function PlayerBar({
           type="button"
           onClick={onTogglePlay}
           aria-label={playing ? "Pause" : "Play the day"}
-          className="flex size-11 items-center justify-center rounded-full bg-accent text-accent-ink shadow-sm transition-transform hover:scale-105 hover:bg-accent-dim active:scale-95 calm:hover:scale-100"
+          className="flex size-11 items-center justify-center rounded-none bg-accent text-accent-ink shadow-sm transition-transform hover:scale-105 hover:bg-accent-dim active:scale-95 calm:hover:scale-100"
         >
           {playing ? <IconPause /> : <IconPlay />}
         </button>
@@ -142,7 +142,7 @@ export function PlayerBar({
               burns ? (
                 <span
                   key={h}
-                  className="absolute top-0 h-1.5 w-0.5 -translate-x-1/2 rounded-full bg-danger"
+                  className="absolute top-0 h-1.5 w-0.5 -translate-x-1/2 rounded-none bg-danger"
                   style={{ left: `${(h / last) * 100}%` }}
                 />
               ) : null,
@@ -160,7 +160,7 @@ export function PlayerBar({
             style={{
               background: `linear-gradient(to right, var(--color-accent) ${progress}%, var(--color-surface-3) ${progress}%)`,
             }}
-            className="block h-1.5 w-full cursor-pointer appearance-none rounded-full [&::-moz-range-thumb]:size-3.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-text [&::-webkit-slider-thumb]:size-3.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-text [&::-webkit-slider-thumb]:shadow"
+            className="block h-1.5 w-full cursor-pointer appearance-none rounded-none [&::-moz-range-thumb]:size-3.5 [&::-moz-range-thumb]:rounded-none [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-text [&::-webkit-slider-thumb]:size-3.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-none [&::-webkit-slider-thumb]:bg-text [&::-webkit-slider-thumb]:shadow"
           />
         </div>
         <span className="w-12 shrink-0 font-mono text-[0.6875rem] tabular-nums text-faint">{hourName(last)}</span>

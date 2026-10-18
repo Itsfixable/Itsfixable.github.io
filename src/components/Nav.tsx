@@ -119,16 +119,16 @@ export function Nav() {
       <a
         href="#content"
         onClick={skipToContent}
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-10 focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-accent-ink"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-10 focus:rounded-none focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-accent-ink"
       >
         Skip to content
       </a>
 
       <nav
         aria-label="Primary"
-        className={`border-b transition-[background-color,border-color,backdrop-filter] duration-300 ${
+        className={`border-b-[3px] transition-[background-color,border-color,backdrop-filter] duration-300 ${
           condensed
-            ? "border-line bg-bg/70 backdrop-blur-xl calm:bg-bg calm:backdrop-blur-none"
+            ? "border-ink bg-bg/90 backdrop-blur-xl calm:bg-bg calm:backdrop-blur-none"
             : "border-transparent bg-transparent"
         }`}
       >
@@ -157,7 +157,7 @@ export function Nav() {
                     href={`#${section.id}`}
                     onClick={jump(section.id)}
                     aria-current={active ? "true" : undefined}
-                    className={`relative inline-flex h-8 items-center whitespace-nowrap rounded-full px-2 text-sm transition-colors xl:px-3 ${
+                    className={`relative inline-flex h-8 items-center whitespace-nowrap rounded-none px-2 text-sm transition-colors xl:px-3 ${
                       active ? "text-accent" : "text-muted hover:text-text"
                     }`}
                   >

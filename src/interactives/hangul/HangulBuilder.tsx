@@ -141,7 +141,7 @@ export function HangulBuilder() {
   return (
     <div className="flex flex-col gap-6">
       {/* Mode switch */}
-      <div className="inline-flex w-fit rounded-full border border-line bg-surface-2 p-1" role="tablist" aria-label="Mode">
+      <div className="inline-flex w-fit rounded-none border border-line bg-surface-2 p-1" role="tablist" aria-label="Mode">
         {(["free", "quiz"] as const).map((value) => (
           <button
             key={value}
@@ -149,7 +149,7 @@ export function HangulBuilder() {
             role="tab"
             aria-selected={mode === value}
             onClick={() => (value === "quiz" ? startQuiz() : setMode("free"))}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-none px-4 py-1.5 text-sm font-medium transition-colors ${
               mode === value ? "bg-surface text-text shadow-sm" : "text-muted hover:text-text"
             }`}
           >
@@ -173,7 +173,7 @@ export function HangulBuilder() {
             <button
               type="button"
               onClick={startQuiz}
-              className="mt-4 rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-accent-ink hover:bg-accent-dim"
+              className="mt-4 rounded-none bg-accent px-4 py-1.5 text-sm font-medium text-accent-ink hover:bg-accent-dim"
             >
               Play again
             </button>
@@ -194,11 +194,11 @@ export function HangulBuilder() {
             ) : (
               <div className="flex gap-2">
                 {!quiz.hinted ? (
-                  <button type="button" onClick={showHint} className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-text hover:border-faint">
+                  <button type="button" onClick={showHint} className="rounded-none border border-line bg-surface px-3 py-1 text-xs font-medium text-text hover:border-faint">
                     Hint
                   </button>
                 ) : null}
-                <button type="button" onClick={nextRound} className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-text hover:border-faint">
+                <button type="button" onClick={nextRound} className="rounded-none border border-line bg-surface px-3 py-1 text-xs font-medium text-text hover:border-faint">
                   Skip
                 </button>
               </div>

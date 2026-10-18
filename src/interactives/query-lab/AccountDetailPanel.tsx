@@ -32,7 +32,7 @@ export function AccountDetailPanel({ id }: { id: number }) {
         <button
           type="button"
           onClick={() => void query.refetch()}
-          className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-text hover:border-faint"
+          className="rounded-none border border-line bg-surface px-3 py-1 text-xs font-medium text-text hover:border-faint"
         >
           Retry
         </button>
@@ -69,7 +69,7 @@ export function AccountDetailPanel({ id }: { id: number }) {
           {activity.map((value, index) => (
             <div key={index} className="flex h-full flex-1 flex-col justify-end gap-1">
               <div
-                className="w-full rounded-sm bg-accent/80"
+                className="w-full bg-accent"
                 style={{ height: `${Math.max(4, (value / peak) * 100)}%` }}
               />
             </div>

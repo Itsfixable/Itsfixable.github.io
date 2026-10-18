@@ -11,6 +11,7 @@ import {
 import { profile } from "@/data/profile";
 import { EASE_IN_OUT, EASE_OUT, calmTransition, durations } from "@/lib/motion";
 import { scrollToSection } from "@/lib/scroll";
+import { Composition } from "@/components/mondrian/Composition";
 import { useIsCalm } from "@/store/ui";
 import { ValueOrPlaceholder } from "./_hero/Placeholder";
 
@@ -92,7 +93,11 @@ export function Hero() {
     <section id="hero" ref={sectionRef} className="relative">
       {/* Sticky so the hero stays in frame while it shrinks, blurs and fades. */}
       <div className="sticky top-0 flex min-h-svh items-center pt-20">
-        <motion.div style={degrade} className="shell origin-left">
+        <motion.div
+          style={degrade}
+          className="shell grid origin-left items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16"
+        >
+          <div className="min-w-0">
           {/* Eyebrow: handle + role */}
           <motion.p
             {...enter(0)}
@@ -156,8 +161,8 @@ export function Hero() {
           >
             <button
               type="button"
-              onClick={() => scrollToSection("projects")}
-              className="group inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-dim"
+              onClick={() => scrollToSection("experience")}
+              className="group inline-flex items-center gap-2 rounded-none border-2 border-ink bg-accent px-6 py-3 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-dim"
             >
               See the work
               <span
@@ -170,7 +175,7 @@ export function Hero() {
             <button
               type="button"
               onClick={() => scrollToSection("contact")}
-              className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-6 py-3 text-sm font-medium text-text transition-colors hover:border-faint hover:bg-surface-2"
+              className="inline-flex items-center gap-2 rounded-none border-2 border-ink bg-surface px-6 py-3 text-sm font-medium text-text transition-colors hover:bg-m-yellow"
             >
               Get in touch
             </button>
@@ -209,6 +214,11 @@ export function Hero() {
               </span>
             </button>
           </motion.div>
+          </div>
+
+          {/* The Mondrian composition: lines spiral in, then the colour
+              blocks land. Beside the name on wide screens, under it on phones. */}
+          <Composition delay={0.15} className="aspect-[640/336] w-full" />
         </motion.div>
       </div>
 

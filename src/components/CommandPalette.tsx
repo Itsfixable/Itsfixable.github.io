@@ -519,8 +519,8 @@ function PaletteDialog({
 
       <div className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-1 border-t border-line px-4 py-2.5 font-mono text-[11px] text-faint">
         <span className="inline-flex items-center gap-1.5">
-          <kbd className="rounded border border-line bg-surface-2 px-1">↑</kbd>
-          <kbd className="rounded border border-line bg-surface-2 px-1">↓</kbd>
+          <kbd className="rounded-none border border-line bg-surface-2 px-1">↑</kbd>
+          <kbd className="rounded-none border border-line bg-surface-2 px-1">↓</kbd>
           move
         </span>
         <span className="inline-flex items-center gap-1.5">
@@ -528,7 +528,7 @@ function PaletteDialog({
           run
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <kbd className="rounded border border-line bg-surface-2 px-1">esc</kbd>
+          <kbd className="rounded-none border border-line bg-surface-2 px-1">esc</kbd>
           close
         </span>
         <span className="ml-auto hidden sm:inline">{modKey} K</span>

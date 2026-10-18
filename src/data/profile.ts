@@ -32,21 +32,10 @@ export type Project = {
   repo: string | null;
   /** Shown as a badge on the card. */
   status: "live" | "in-progress" | "archived" | "physical";
-  /** An interactive shown open on the page, under the project list. */
+  /** An interactive shown open on the page next to the project card. */
   playable: "hangul" | null;
-};
-
-export type TimelineEntry = {
-  id: string;
-  tool: string;
-  /** When Koji picked it up. */
-  when: string;
-  /** The itch that made this tool worth learning. */
-  why: string;
-  /** What he actually shipped with it. */
-  built: string;
-  /** Rendered as a short monospace label. */
-  marker: string;
+  /** Has its own long-form section (EcoPulse), so it is not repeated as a card. */
+  caseStudy: boolean;
 };
 
 export const profile = {
@@ -55,9 +44,8 @@ export const profile = {
   role: "Student Developer",
   location: "Alpharetta, GA",
   /** Hero sub-line. Two short clauses read best here. */
-  tagline: "I build things that measure whether they actually worked.",
+  tagline: "Product engineering intern at Rox AI. Built EcoPulse, which cut an island's diesel use by 41%.",
   about: [
-    "I like problems with a number attached. The projects I'm proudest of are the ones where I can point at a measurement and say what changed.",
     "I started with Arduino hardware in 2023 and moved into software. Now I build full-stack web apps, and I speak English and Japanese.",
   ],
   /** Short list under the About copy. */
@@ -101,18 +89,6 @@ export const resume = {
   available: true,
 };
 
-export const githubUsername = "Itsfixable";
-
-/**
- * Repositories left out of the live GitHub section: experiments and school
- * assignments that are public on GitHub but are not portfolio work.
- */
-export const hiddenRepos: readonly string[] = [
-  "test1",
-  "pokemonCard",
-  "fbla-game-simulation-and-programming",
-  "Proxy_War_Board_Game",
-];
 
 export const projects: Project[] = [
   {
@@ -142,6 +118,7 @@ export const projects: Project[] = [
     repo: null,
     status: "live",
     playable: null,
+    caseStudy: true,
   },
   {
     id: "korean-quest",
@@ -169,6 +146,7 @@ export const projects: Project[] = [
     repo: "https://github.com/Itsfixable/Korean-Quest",
     status: "live",
     playable: "hangul",
+    caseStudy: false,
   },
 ];
 
@@ -270,80 +248,12 @@ export const ecoPulse = {
     title: "Result",
     body: "On the same forecast, a fixed schedule burns 303 L of diesel and EcoPulse burns 179 L: 41% less diesel and 332 kg of CO₂ avoided, with no critical outages and the water tank never running dry.",
   },
-  /**
-   * Diesel burned per hour in one 24-hour plan, from EcoPulse's own solver run
-   * on its saved Ta'ū forecast (`npx tsx scripts/verify.ts` in the EcoPulse
-   * repo; generator kW × 0.28 L/kWh). The other 20 hours burn no diesel in
-   * either plan, so only these four are charted.
-   */
-  chart: {
-    isPlaceholder: false,
-    unit: "L / hour",
-    period: "hour",
-    note: "One 24-hour plan for Ta'ū. Neither plan burns diesel outside 6–9 am. At 8 and 9 am the fixed schedule runs desalination on the generator, while EcoPulse waits for the sun.",
-    series: [
-      { label: "Fixed schedule", key: "baseline" as const },
-      { label: "With EcoPulse", key: "withEcoPulse" as const },
-    ],
-    data: [
-      { bucket: "6 am", baseline: 72, withEcoPulse: 72 },
-      { bucket: "7 am", baseline: 86, withEcoPulse: 86 },
-      { bucket: "8 am", baseline: 116, withEcoPulse: 21 },
-      { bucket: "9 am", baseline: 29, withEcoPulse: 0 },
-    ],
-  },
 } as const;
 
-/**
- * One entry per tool, in the order they were picked up. The timeline draws
- * itself as you scroll, so order matters more than exact dates.
- */
-export const timeline: TimelineEntry[] = [
-  {
-    id: "react",
-    tool: "React",
-    when: "2025",
-    why: "Wanted to stop rebuilding the same DOM by hand on every state change.",
-    built: "Korean Quest, a Korean-learning site with a pixel-art adventure game.",
-    marker: "01",
-  },
-  {
-    id: "typescript",
-    tool: "TypeScript",
-    when: "2026",
-    why: "Got tired of finding out about a renamed prop at runtime.",
-    built: "EcoPulse's 24-hour power and water dispatch solver.",
-    marker: "02",
-  },
-  {
-    id: "tailwind",
-    tool: "Tailwind CSS",
-    when: "2026",
-    why: "Styling in the same file as the markup turned out to be faster than naming things.",
-    built: "A customer-facing page I rebuilt at Rox AI, later adopted by Verkada.",
-    marker: "03",
-  },
-  {
-    id: "zustand",
-    tool: "Zustand",
-    when: "2026",
-    why: "Needed state two unrelated components could share without threading props through five levels.",
-    built: "The motion-mode and filter store running this site.",
-    marker: "04",
-  },
-  {
-    id: "tanstack",
-    tool: "TanStack Query",
-    when: "2026",
-    why: "Server data is not state — caching, refetching and loading flags should not be hand-rolled.",
-    built: "The live GitHub section further up this page.",
-    marker: "05",
-  },
-];
 
 export const contact = {
-  heading: "Let's build something measurable",
-  body: "If you're hiring interns, putting a hackathon team together, or have a problem with a number attached, I'd like to hear about it. Email is the fastest way to reach me.",
+  heading: "Get in touch",
+  body: "Hiring interns or putting a hackathon team together? Email is the fastest way to reach me.",
   socials,
   resume,
 };

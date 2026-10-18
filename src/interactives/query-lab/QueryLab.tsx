@@ -268,8 +268,8 @@ function Lab() {
               <p className="eyebrow">Try it · Rox AI</p>
               <h4 className="mt-2 text-2xl font-semibold tracking-tight text-text">Query lab</h4>
             </div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface-2 px-3 py-1 font-mono text-[0.625rem] tracking-[0.12em] text-muted uppercase">
-              <span aria-hidden="true" className="size-1.5 rounded-full bg-accent" />
+            <p className="inline-flex items-center gap-2 rounded-none border border-line bg-surface-2 px-3 py-1 font-mono text-[0.625rem] tracking-[0.12em] text-muted uppercase">
+              <span aria-hidden="true" className="size-1.5 rounded-none bg-accent" />
               Live Supabase Postgres · fictional data
             </p>
           </div>
@@ -315,7 +315,7 @@ function Lab() {
             <span aria-live="polite">{loadedLabel}</span>
             {query.isFetching ? (
               <span className="inline-flex items-center gap-1.5 text-accent">
-                <span aria-hidden="true" className="size-1.5 animate-pulse rounded-full bg-accent calm:animate-none" />
+                <span aria-hidden="true" className="size-1.5 animate-pulse rounded-none bg-accent calm:animate-none" />
                 {isFetchingNextPage ? "loading next page" : "fetching"}
               </span>
             ) : null}
@@ -432,7 +432,7 @@ function Lab() {
                   <button
                     type="button"
                     onClick={() => void fetchNextPage()}
-                    className="rounded-full border border-line bg-surface px-3 py-1 text-text hover:border-faint"
+                    className="rounded-none border border-line bg-surface px-3 py-1 text-text hover:border-faint"
                   >
                     Retry
                   </button>
@@ -495,7 +495,7 @@ function SkeletonRows() {
   return (
     <div aria-hidden="true" className="flex flex-col gap-px p-3">
       {Array.from({ length: 9 }, (_, index) => (
-        <div key={index} className="h-9 animate-pulse rounded bg-surface-2 calm:animate-none" />
+        <div key={index} className="h-9 animate-pulse rounded-none bg-surface-2 calm:animate-none" />
       ))}
     </div>
   );
@@ -512,7 +512,7 @@ function LoadError({ message, onRetry }: { message: string; onRetry: () => void 
       <button
         type="button"
         onClick={onRetry}
-        className="rounded-full bg-accent px-4 py-1.5 text-xs font-medium text-accent-ink hover:bg-accent-dim"
+        className="rounded-none bg-accent px-4 py-1.5 text-xs font-medium text-accent-ink hover:bg-accent-dim"
       >
         Retry
       </button>

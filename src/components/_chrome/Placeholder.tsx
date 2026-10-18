@@ -28,7 +28,7 @@ export function PlaceholderChip({
     <span
       className={`inline-flex items-center gap-1.5 rounded-md border border-dashed border-line bg-surface px-2 py-0.5 align-middle font-mono text-[11px] leading-5 text-faint ${className}`}
     >
-      <span aria-hidden="true" className="inline-block size-1.5 rounded-full bg-faint" />
+      <span aria-hidden="true" className="inline-block size-1.5 rounded-none bg-faint" />
       {PLACEHOLDER}
       {note ? <span className="opacity-70">{note}</span> : null}
     </span>

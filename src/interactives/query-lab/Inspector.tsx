@@ -66,7 +66,7 @@ function useCacheClock(): number {
 function StatusChip({ children, className }: { children: React.ReactNode; className: string }) {
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 font-mono text-[0.625rem] tracking-[0.08em] uppercase ${className}`}
+      className={`inline-flex shrink-0 items-center rounded-none border px-2 py-0.5 font-mono text-[0.625rem] tracking-[0.08em] uppercase ${className}`}
     >
       {children}
     </span>
@@ -168,7 +168,7 @@ export function Inspector() {
             type="button"
             onClick={armFailure}
             disabled={failNext}
-            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`rounded-none border px-3 py-1.5 text-xs font-medium transition-colors ${
               failNext
                 ? "border-danger bg-danger-soft text-danger"
                 : "border-line bg-surface text-text hover:border-faint"
@@ -179,7 +179,7 @@ export function Inspector() {
           <button
             type="button"
             onClick={() => void queryClient.resetQueries()}
-            className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-text hover:border-faint"
+            className="rounded-none border border-line bg-surface px-3 py-1.5 text-xs font-medium text-text hover:border-faint"
           >
             Clear the cache
           </button>

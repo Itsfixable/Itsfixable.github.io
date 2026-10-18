@@ -418,7 +418,7 @@ export function TracingPad() {
                 >
                   {ch}
                   {(stars[ch] ?? 0) > 0 ? (
-                    <span aria-hidden="true" className="absolute -top-1.5 -right-1.5 rounded-full bg-sun px-1 font-mono text-[0.5625rem] leading-4 text-text">
+                    <span aria-hidden="true" className="absolute -top-1.5 -right-1.5 rounded-none bg-sun px-1 font-mono text-[0.5625rem] leading-4 text-text">
                       {stars[ch]}
                     </span>
                   ) : null}
@@ -449,7 +449,7 @@ export function TracingPad() {
         {/* Controls */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div role="tablist" aria-label="Stage" className="inline-flex whitespace-nowrap rounded-full border border-line bg-surface-2 p-1">
+            <div role="tablist" aria-label="Stage" className="inline-flex whitespace-nowrap rounded-none border border-line bg-surface-2 p-1">
               {STAGES.map(({ stage: s, label }) => (
                 <button
                   key={s}
@@ -457,7 +457,7 @@ export function TracingPad() {
                   role="tab"
                   aria-selected={stage === s}
                   onClick={() => chooseStage(s)}
-                  className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                  className={`rounded-none px-2.5 py-1 text-xs font-medium transition-colors ${
                     stage === s ? "bg-surface text-text shadow-sm" : "text-muted hover:text-text"
                   }`}
                 >
@@ -477,7 +477,7 @@ export function TracingPad() {
               <button
                 type="button"
                 onClick={check}
-                className="rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-accent-ink hover:bg-accent-dim"
+                className="rounded-none bg-accent px-4 py-1.5 text-sm font-medium text-accent-ink hover:bg-accent-dim"
               >
                 Check
               </button>
@@ -485,14 +485,14 @@ export function TracingPad() {
             <button
               type="button"
               onClick={clear}
-              className="rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-medium text-text hover:border-faint"
+              className="rounded-none border border-line bg-surface px-4 py-1.5 text-sm font-medium text-text hover:border-faint"
             >
               Clear
             </button>
             <button
               type="button"
               onClick={showMe}
-              className="rounded-full border border-line bg-surface px-4 py-1.5 text-sm font-medium text-text hover:border-faint"
+              className="rounded-none border border-line bg-surface px-4 py-1.5 text-sm font-medium text-text hover:border-faint"
             >
               Show me
             </button>
