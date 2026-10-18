@@ -405,7 +405,7 @@ function PaletteDialog({
       animate={calm ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
       exit={calm ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.99 }}
       transition={transition}
-      className="relative flex h-full w-full min-w-0 flex-col overflow-hidden border-line bg-surface shadow-2xl shadow-black/60 sm:h-auto sm:max-h-[70vh] sm:max-w-xl sm:rounded-card sm:border"
+      className="relative flex h-full w-full min-w-0 flex-col overflow-hidden border-line bg-surface shadow-2xl shadow-black/15 sm:h-auto sm:max-h-[70vh] sm:max-w-xl sm:rounded-card sm:border"
     >
       <h2 id={titleId} className="sr-only">
         Command palette — jump to a section or open a link

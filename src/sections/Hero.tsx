@@ -149,17 +149,6 @@ export function Hero() {
             {profile.tagline}
           </motion.p>
 
-          {/* Availability */}
-          <motion.p
-            {...enter(AFTER_NAME + 0.12)}
-            className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1"
-          >
-            <span className="eyebrow">Availability</span>
-            <span className="font-mono text-sm text-muted">
-              <ValueOrPlaceholder value={profile.availability} />
-            </span>
-          </motion.p>
-
           {/* CTAs — the accent fill is the one bold accent in this section */}
           <motion.div
             {...enter(AFTER_NAME + 0.2)}

@@ -64,9 +64,15 @@ jobs:
           echo "base=$base" >> "$GITHUB_OUTPUT"
           echo "repo=$repo -> NEXT_PUBLIC_BASE_PATH='$base'"
 
+      # The Query lab's Supabase settings are inlined into the static bundle at
+      # build time. They are repository *variables*, not secrets: the anon key
+      # is public by design (the table it reaches is read-only). Without them
+      # the site still builds, and the lab says it is not configured.
       - name: Build static export
         env:
           NEXT_PUBLIC_BASE_PATH: ${{ steps.basepath.outputs.base }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: npm run build
 
       # Pages runs the upload through Jekyll unless told otherwise, and Jekyll

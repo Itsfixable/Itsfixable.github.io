@@ -26,12 +26,9 @@ export type UiState = {
   motionMode: MotionMode;
   /** True once the client has taken over from the server-rendered default. */
   hydrated: boolean;
-  /** `null` means "all languages". Drives the live GitHub section. */
-  languageFilter: string | null;
 
   setMotionMode: (mode: MotionMode) => void;
   toggleMotionMode: () => void;
-  setLanguageFilter: (language: string | null) => void;
   /** Re-reads storage + the OS preference. Called once on mount. */
   syncFromEnvironment: () => void;
 };
@@ -54,7 +51,6 @@ function reflectOnDocument(mode: MotionMode) {
 export const useUiStore = create<UiState>((set, get) => ({
   motionMode: SSR_MOTION_MODE,
   hydrated: false,
-  languageFilter: null,
 
   setMotionMode: (mode) => {
     persist(mode);
@@ -66,7 +62,6 @@ export const useUiStore = create<UiState>((set, get) => ({
     get().setMotionMode(get().motionMode === "wild" ? "calm" : "wild");
   },
 
-  setLanguageFilter: (language) => set({ languageFilter: language }),
 
   syncFromEnvironment: () => {
     const mode = resolveInitialMotionMode();
@@ -77,7 +72,7 @@ export const useUiStore = create<UiState>((set, get) => ({
 
 /* ---------------------------------------------------------------------------
  * Selector hooks. Prefer these in components: they subscribe to one slice, so
- * changing the language filter never re-renders an animated section.
+ * changing one slice never re-renders components that read another.
  * ------------------------------------------------------------------------- */
 
 export const useMotionMode = () => useUiStore((s) => s.motionMode);
@@ -87,5 +82,3 @@ export const useIsCalm = () => useUiStore((s) => s.motionMode === "calm");
 
 export const useToggleMotionMode = () => useUiStore((s) => s.toggleMotionMode);
 export const useSetMotionMode = () => useUiStore((s) => s.setMotionMode);
-export const useLanguageFilter = () => useUiStore((s) => s.languageFilter);
-export const useSetLanguageFilter = () => useUiStore((s) => s.setLanguageFilter);

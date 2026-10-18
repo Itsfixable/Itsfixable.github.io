@@ -3,11 +3,10 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { staggerParent, useReveal, viewportOnce } from "@/lib/motion";
-import { useIsCalm, useLanguageFilter, useSetLanguageFilter } from "@/store/ui";
-import { profile } from "@/data/profile";
+import { useIsCalm } from "@/store/ui";
+import { hiddenRepos, profile } from "@/data/profile";
 import { RepoCard } from "./_github/RepoCard";
 import { RepoSkeletonGrid } from "./_github/RepoSkeleton";
-import { deriveLanguages, languageColor } from "./_github/languages";
 import { useRelativeTime } from "./_github/relativeTime";
 import { GITHUB_PROFILE_URL, useRepos } from "./_github/useRepos";
 import { describeError, type Repo } from "./_github/types";
@@ -74,52 +73,6 @@ function ExternalIcon() {
 
 /* ------------------------------------------------------------------- bits */
 
-/** Fixed height: the loading placeholder row has to match it to the pixel. */
-const CHIP_HEIGHT = "h-8";
-
-const CHIP_BASE =
-  `inline-flex ${CHIP_HEIGHT} shrink-0 items-center gap-1.5 rounded-full border px-3 font-mono text-[0.6875rem] leading-none tracking-[0.08em] transition-colors duration-200`;
-
-function LanguageChip({
-  label,
-  count,
-  active,
-  dotColor,
-  onClick,
-}: {
-  label: string;
-  count: number;
-  active: boolean;
-  dotColor: string | null;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={
-        active
-          ? `${CHIP_BASE} border-accent bg-accent text-accent-ink`
-          : `${CHIP_BASE} border-line bg-surface text-muted hover:border-faint hover:text-text`
-      }
-    >
-      {dotColor ? (
-        <span
-          aria-hidden="true"
-          className="size-1.5 shrink-0 rounded-full"
-          // Per-language colour, so it has to be an inline style. When the
-          // chip is filled with the accent the dot inherits the ink colour
-          // instead, which keeps contrast readable.
-          style={{ backgroundColor: active ? "currentColor" : dotColor }}
-        />
-      ) : null}
-      <span>{label}</span>
-      <span className={active ? "text-accent-ink/60" : "text-faint"}>{count}</span>
-    </button>
-  );
-}
-
 function ProfileLink({ children }: { children: React.ReactNode }) {
   return (
     <a
@@ -143,46 +96,21 @@ export function GitHub() {
   const { data, error, isError, isPending, isFetching, dataUpdatedAt, refetch } =
     useRepos();
 
-  const storedFilter = useLanguageFilter();
-  const setLanguageFilter = useSetLanguageFilter();
 
   /**
    * Forks are excluded from the list the section is about: this is a "what has
    * Koji built" shelf, not a mirror of everything the account has ever
-   * starred. The query function already sorted by most recent push.
+   * starred. Repos listed in `hiddenRepos` (experiments, school assignments)
+   * are left out for the same reason. The query function already sorted by
+   * most recent push.
    */
   const repos = useMemo<Repo[]>(
-    () => (data ?? []).filter((repo) => !repo.fork),
+    () => (data ?? []).filter((repo) => !repo.fork && !hiddenRepos.includes(repo.name)),
     [data],
   );
 
-  const languages = useMemo(() => deriveLanguages(repos), [repos]);
-
-  /**
-   * The store is the source of truth, but it outlives any particular fetch —
-   * it can be holding "Rust" after a refresh in which no Rust repo came back.
-   * Rather than render an empty grid, the selection falls back to "all" when
-   * the stored language is not in the current data.
-   */
-  const activeLanguage = useMemo(() => {
-    if (storedFilter === null) return null;
-    return languages.some((entry) => entry.name === storedFilter)
-      ? storedFilter
-      : null;
-  }, [storedFilter, languages]);
-
-  const filterIsStale = storedFilter !== null && activeLanguage === null;
-
-  const filtered = useMemo(
-    () =>
-      activeLanguage === null
-        ? repos
-        : repos.filter((repo) => repo.language === activeLanguage),
-    [repos, activeLanguage],
-  );
-
-  const visible = filtered.slice(0, MAX_CARDS);
-  const overflow = filtered.length - visible.length;
+  const visible = repos.slice(0, MAX_CARDS);
+  const overflow = repos.length - visible.length;
 
   // `dataUpdatedAt` is 0 until the first successful fetch resolves.
   const updatedLabel = useRelativeTime(dataUpdatedAt > 0 ? dataUpdatedAt : null);
@@ -190,7 +118,7 @@ export function GitHub() {
   const failure = isError ? describeError(error) : null;
 
   const countLabel =
-    filtered.length === 1 ? "1 repository" : `${filtered.length} repositories`;
+    repos.length === 1 ? "1 repository" : `${repos.length} repositories`;
 
   /**
    * Screen readers get the state as text in a polite live region rather than
@@ -202,9 +130,7 @@ export function GitHub() {
       ? "Refreshing repositories from GitHub."
       : failure
         ? `${failure.title}. ${failure.body}`
-        : `Showing ${visible.length} of ${countLabel}${
-            activeLanguage ? ` in ${activeLanguage}` : ""
-          }.`;
+        : `Showing ${visible.length} of ${countLabel}.`;
 
   return (
     <section id="github" className="shell section-y">
@@ -218,8 +144,8 @@ export function GitHub() {
           <p className="text-sm leading-relaxed text-muted sm:text-base">
             Fetched in your browser the moment this page loads, not baked in at
             build time — so this is the current state of{" "}
-            <ProfileLink>@{profile.handle}</ProfileLink>, forks excluded and
-            most recently pushed first.
+            <ProfileLink>@{profile.handle}</ProfileLink>, forks and experiments
+            excluded, most recently pushed first.
           </p>
         </div>
 
@@ -250,64 +176,11 @@ export function GitHub() {
 
       <hr className="hairline my-10 md:my-12" />
 
-      {/* --------------------------------------------------- language filter */}
-      {isPending ? (
-        /* Holds the filter row's exact height while the chips are unknown, so
-           the grid below does not get shunted down when they arrive. */
-        <div className="flex flex-col gap-3" aria-hidden="true">
-          <div className="flex flex-wrap gap-2">
-            {[3.5, 6.5, 5.5, 4.5].map((width) => (
-              <div
-                key={width}
-                className={`${CHIP_HEIGHT} rounded-full border border-line bg-surface`}
-                style={{ width: `${width}rem` }}
-              />
-            ))}
-          </div>
-          <div className="h-4" />
-        </div>
-      ) : languages.length > 0 ? (
-        <div className="flex flex-col gap-3">
-          <div
-            role="group"
-            aria-label="Filter repositories by language"
-            // Wrapping, not scrolling: nothing can push the page sideways at
-            // 375px no matter how many languages come back.
-            className="flex flex-wrap gap-2"
-          >
-            <LanguageChip
-              label="All"
-              count={repos.length}
-              active={activeLanguage === null}
-              dotColor={null}
-              onClick={() => setLanguageFilter(null)}
-            />
-            {languages.map((entry) => {
-              const active = activeLanguage === entry.name;
-              return (
-                <LanguageChip
-                  key={entry.name}
-                  label={entry.name}
-                  count={entry.count}
-                  active={active}
-                  dotColor={languageColor(entry.name)}
-                  // A real toggle: pressing the active chip clears the filter.
-                  onClick={() => setLanguageFilter(active ? null : entry.name)}
-                />
-              );
-            })}
-          </div>
-
-          <p className="min-h-4 font-mono text-[0.6875rem] text-faint">
-            {overflow > 0
-              ? `Showing ${visible.length} of ${countLabel}`
-              : countLabel}
-            {activeLanguage ? ` in ${activeLanguage}` : ""}
-            {filterIsStale
-              ? ` — nothing tagged ${storedFilter} came back this time, so this is everything`
-              : ""}
-          </p>
-        </div>
+      {/* ------------------------------------------------------------ count */}
+      {!isPending && repos.length > 0 ? (
+        <p className="font-mono text-[0.6875rem] text-faint">
+          {overflow > 0 ? `Showing ${visible.length} of ${countLabel}` : countLabel}
+        </p>
       ) : null}
 
       {/* ----------------------------------------------------------- content */}

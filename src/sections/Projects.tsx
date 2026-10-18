@@ -1,12 +1,25 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { projects } from "@/data/profile";
+import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
 import { useReveal } from "@/lib/motion";
 import { useIsCalm } from "@/store/ui";
 import { PinnedRail } from "./_projects/PinnedRail";
 import { ProjectCard } from "./_projects/ProjectCard";
 import { useCanPin } from "./_projects/usePinning";
+
+const PLAYGROUND_HEIGHT = "36rem";
+
+/** Korean Quest's tracing and syllable builder, fetched as you scroll near. */
+const HangulPlayground = dynamic(
+  () => import("@/interactives/hangul/HangulPlayground").then((module) => module.HangulPlayground),
+  {
+    ssr: false,
+    loading: () => <InteractiveLoading minHeight={PLAYGROUND_HEIGHT} label="Loading Korean Quest" />,
+  },
+);
 
 /**
  * Projects, as a pinned horizontal rail — on a roomy viewport, in wild mode.
@@ -55,6 +68,14 @@ export function Projects() {
           ))}
         </ol>
       )}
+
+      {projects.some((project) => project.playable === "hangul") ? (
+        <div className="shell mt-5 md:mt-8">
+          <LazyMount minHeight={PLAYGROUND_HEIGHT} label="Learn some Hangul">
+            <HangulPlayground />
+          </LazyMount>
+        </div>
+      ) : null}
     </section>
   );
 }

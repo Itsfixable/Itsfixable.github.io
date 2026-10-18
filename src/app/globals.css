@@ -2,28 +2,37 @@
 
 /* ===========================================================================
    Design tokens
-   Dark theme, one bold accent (acid lime). The accent is load-bearing: it
-   marks the single most important thing in a section and nothing else.
-   Everything structural is a neutral.
+   "Paper and cobalt": a light theme on warm off-white paper, with one bold
+   accent (cobalt ink). The accent is load-bearing: it marks the single most
+   important thing in a section and nothing else. Everything structural is a
+   neutral. Contrast on --color-bg: text 16:1, muted 6.9:1, faint 4.9:1,
+   accent 6.3:1, white on accent 7:1.
    ========================================================================= */
 
 @theme {
-  /* Neutrals, darkest to lightest */
-  --color-bg: #08090a;
-  --color-surface: #101214;
-  --color-surface-2: #171a1d;
-  --color-surface-3: #202428;
-  --color-line: #262b30;
-  --color-faint: #5c636a;
-  --color-muted: #8e959c;
-  --color-text: #eceef0;
+  /* Neutrals. The page is paper; surfaces step slightly lighter (cards) or
+     darker (chips, wells) from it. */
+  --color-bg: #f5f2ea;
+  --color-surface: #fdfbf7;
+  --color-surface-2: #efebe1;
+  --color-surface-3: #e7e2d5;
+  --color-line: #dcd6c7;
+  --color-faint: #6c6961;
+  --color-muted: #55534d;
+  --color-text: #16171a;
 
   /* The one accent */
-  --color-accent: #c8ff3d;
-  --color-accent-dim: #8bb52a;
-  --color-accent-soft: #1d2410;
+  --color-accent: #2747d9;
+  --color-accent-dim: #1d36ad;
+  --color-accent-soft: #e3e8fb;
   /* Text/icon colour to put *on* an accent fill */
-  --color-accent-ink: #0a0c05;
+  --color-accent-ink: #ffffff;
+
+  /* Errors only (failed requests in the Query lab). Not a second accent. */
+  --color-danger: #b42318;
+  --color-danger-soft: #fbe8e5;
+  /* Data only: sunlight in the EcoPulse game's supply chart. */
+  --color-sun: #e3a92b;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
@@ -56,7 +65,7 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
     /* Lenis drives scrolling; native smooth scroll would fight it. */
     scroll-behavior: auto;
   }

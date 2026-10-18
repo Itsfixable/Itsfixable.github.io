@@ -1,0 +1,35 @@
+# Free Supabase projects pause after about a week without traffic, which would
+# break the Query lab for the next visitor. One tiny read every three days
+# keeps the project awake.
+#
+# Uses the same repository variables as the deploy workflow. Note that GitHub
+# turns off scheduled workflows in a repository with no commits for 60 days;
+# re-enable it from the Actions tab if that happens.
+
+name: Keep Supabase awake
+
+on:
+  schedule:
+    - cron: "17 9 */3 * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read one row
+        env:
+          SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
+            echo "Supabase variables are not set; nothing to ping."
+            exit 0
+          fi
+          curl --fail --silent --show-error --max-time 30 \
+            "$SUPABASE_URL/rest/v1/demo_accounts?select=id&limit=1" \
+            -H "apikey: $SUPABASE_KEY" > /dev/null
+          echo "Supabase answered."

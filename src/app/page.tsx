@@ -3,6 +3,7 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { MainContent } from "@/components/MainContent";
 import { Hero } from "@/sections/Hero";
 import { About } from "@/sections/About";
+import { Experience } from "@/sections/Experience";
 import { EcoPulse } from "@/sections/EcoPulse";
 import { Projects } from "@/sections/Projects";
 import { Timeline } from "@/sections/Timeline";
@@ -21,6 +22,7 @@ export default function Page() {
       <MainContent>
         <Hero />
         <About />
+        <Experience />
         <EcoPulse />
         <Projects />
         <Timeline />

@@ -4,25 +4,15 @@ import { useEffect, useState, type MouseEvent } from "react";
 import { profile } from "@/data/profile";
 import { scrollToSection } from "@/lib/scroll";
 import { navSections, sections, type SectionId } from "@/lib/sections";
-import { IconSearch } from "./_chrome/icons";
-import { MotionToggle } from "./_chrome/MotionToggle";
-import { useModKeyLabel } from "./_chrome/platform";
-import { useSetPaletteOpen } from "./_chrome/paletteStore";
 import { ResumeButton } from "./_chrome/ResumeButton";
 
 /** Where in the viewport a section counts as "the one you are reading". */
 const ACTIVE_LINE = 112;
 
-const initials = profile.name
-  .split(/\s+/)
-  .map((word) => word[0] ?? "")
-  .join("");
 
 export function Nav() {
   const [activeId, setActiveId] = useState<SectionId | null>(null);
   const [condensed, setCondensed] = useState(false);
-  const setPaletteOpen = useSetPaletteOpen();
-  const modKey = useModKeyLabel();
 
   /**
    * Active-section tracking: one IntersectionObserver over the section
@@ -151,20 +141,13 @@ export function Nav() {
             href="#hero"
             onClick={jump("hero")}
             aria-label={`${profile.name} — back to top`}
-            className="flex shrink-0 items-center gap-2.5"
+            className="flex shrink-0 items-center"
           >
-            <span className="grid size-7 place-items-center rounded-md border border-line bg-surface-2 font-mono text-[11px] font-semibold tracking-tight text-text">
-              {initials}
-            </span>
-            <span className="hidden text-sm font-medium text-text xl:inline">
-              {profile.name}
-            </span>
+            <span className="text-sm font-medium text-text">{profile.name}</span>
           </a>
 
-          {/* Six labels plus the control cluster only fit from lg up. Below
-              that they collapse entirely and the palette button — which lists
-              every section, navHidden ones included — becomes the way to
-              navigate. Nothing is allowed to overflow instead. */}
+          {/* The section labels only fit from lg up; below that they collapse
+              rather than overflow, and the page is navigated by scrolling. */}
           <ul className="ml-4 hidden min-w-0 items-center lg:flex">
             {navSections.map((section) => {
               const active = activeId === section.id;
@@ -192,21 +175,6 @@ export function Nav() {
           </ul>
 
           <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
-            <button
-              type="button"
-              onClick={() => setPaletteOpen(true)}
-              aria-label="Open command palette"
-              aria-keyshortcuts="Meta+K Control+K"
-              title={`Search sections and links (${modKey} K)`}
-              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-line bg-surface-2 px-2.5 text-sm text-muted transition-colors hover:border-faint hover:text-text sm:px-3"
-            >
-              <IconSearch className="shrink-0" />
-              <kbd className="hidden rounded border border-line bg-surface-3 px-1.5 py-px font-mono text-[10px] text-faint sm:inline">
-                {modKey} K
-              </kbd>
-            </button>
-
-            <MotionToggle />
             <ResumeButton />
           </div>
         </div>

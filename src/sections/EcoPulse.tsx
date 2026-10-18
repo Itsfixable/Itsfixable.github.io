@@ -1,11 +1,24 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ecoPulse, projects } from "@/data/profile";
 import { revealVariants, staggerParent, viewportOnce } from "@/lib/motion";
 import { useIsCalm } from "@/store/ui";
 import { FuelChart } from "./_ecopulse/FuelChart";
 import { MetricCounter } from "./_ecopulse/MetricCounter";
+import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
+
+const GAME_HEIGHT = "34rem";
+
+/** Its own chunk, fetched only when a visitor scrolls near it. */
+const BeatTheSolver = dynamic(
+  () => import("@/interactives/beat-the-solver/BeatTheSolver").then((module) => module.BeatTheSolver),
+  {
+    ssr: false,
+    loading: () => <InteractiveLoading minHeight={GAME_HEIGHT} label="Loading the game" />,
+  },
+);
 
 /**
  * The EcoPulse case study: Problem -> Approach -> Result, with the headline
@@ -189,6 +202,13 @@ export function EcoPulse() {
         >
           <FuelChart />
         </motion.div>
+
+        {/* ------------------------------------------------- the game */}
+        <div className="mt-16 md:mt-24">
+          <LazyMount minHeight={GAME_HEIGHT} label="Can you match the solver?">
+            <BeatTheSolver />
+          </LazyMount>
+        </div>
 
         {/* ------------------------------------------------- stack */}
         {project && project.stack.length > 0 ? (

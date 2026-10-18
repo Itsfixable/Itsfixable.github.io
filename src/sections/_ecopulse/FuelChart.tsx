@@ -55,10 +55,12 @@ const bars: Bar[] = data.flatMap((bucket, bucketIndex) =>
 const baselineValues = data.map((bucket) => bucket.baseline);
 const ecoValues = data.map((bucket) => bucket.withEcoPulse);
 
+const PERIOD_HEADING = chart.period.charAt(0).toUpperCase() + chart.period.slice(1);
+
 const ARIA_LABEL = [
-  `Grouped bar chart, ${chart.unit}, across ${data.length} weekly buckets.`,
-  `${series[0].label} holds between ${Math.min(...baselineValues)} and ${Math.max(...baselineValues)}.`,
-  `${series[1].label} falls from ${ecoValues[0]} to ${ecoValues[ecoValues.length - 1]}.`,
+  `Grouped bar chart, ${chart.unit}, across ${data.length} ${chart.period}ly buckets.`,
+  `${series[0].label}: ${baselineValues.join(", ")}.`,
+  `${series[1].label}: ${ecoValues.join(", ")}.`,
   chart.isPlaceholder ? "Values are illustrative." : "",
 ]
   .filter(Boolean)
@@ -87,7 +89,9 @@ export function FuelChart() {
   return (
     <figure ref={ref} className="card p-5 sm:p-8 lg:p-10">
       <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-4">
-        <p className="eyebrow">{headlineMetric.label} by week</p>
+        <p className="eyebrow">
+          {headlineMetric.label} by {chart.period}
+        </p>
         <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
           {series.map((s) => (
             <li key={s.key} className="flex items-center gap-2 text-xs text-muted sm:text-sm">
@@ -206,12 +210,12 @@ export function FuelChart() {
       */}
       <table className="sr-only table-fixed">
         <caption className="whitespace-normal">
-          {headlineMetric.label} by week, in {chart.unit}
+          {headlineMetric.label} by {chart.period}, in {chart.unit}
           {chart.isPlaceholder ? " (illustrative values)" : ""}
         </caption>
         <thead>
           <tr>
-            <th scope="col">Week</th>
+            <th scope="col">{PERIOD_HEADING}</th>
             {series.map((s) => (
               <th key={s.key} scope="col">
                 {s.label} ({chart.unit})
@@ -242,7 +246,11 @@ export function FuelChart() {
             single bar.
           </span>
         </figcaption>
-      ) : null}
+      ) : (
+        <figcaption className="mt-7 border-t border-line pt-5 text-xs leading-relaxed text-faint">
+          <span className="block max-w-[62ch]">{chart.note}</span>
+        </figcaption>
+      )}
     </figure>
   );
 }

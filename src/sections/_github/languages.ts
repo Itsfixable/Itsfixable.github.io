@@ -1,7 +1,5 @@
 "use client";
 
-import type { Repo } from "./types";
-
 /**
  * Language dots use GitHub's own colours rather than the site accent: the
  * acid lime is reserved for the one active thing in a section, and thirty
@@ -66,29 +64,4 @@ const FALLBACK_COLOR = "#5c636a";
 export function languageColor(language: string | null): string {
   if (!language) return FALLBACK_COLOR;
   return LANGUAGE_COLORS[language] ?? FALLBACK_COLOR;
-}
-
-export type LanguageFacet = {
-  name: string;
-  count: number;
-};
-
-/**
- * The filter chips are derived from whatever actually came back, never from a
- * hardcoded list — a new language shows up on its own, and a language that
- * disappears takes its chip with it.
- *
- * Sorted by frequency, then alphabetically so equal counts are stable.
- */
-export function deriveLanguages(repos: Repo[]): LanguageFacet[] {
-  const counts = new Map<string, number>();
-
-  for (const repo of repos) {
-    if (!repo.language) continue;
-    counts.set(repo.language, (counts.get(repo.language) ?? 0) + 1);
-  }
-
-  return [...counts.entries()]
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
