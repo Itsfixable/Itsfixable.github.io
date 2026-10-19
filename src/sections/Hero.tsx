@@ -33,9 +33,11 @@ const LETTER_STEP = 0.035;
 const AFTER_NAME = LETTER_DELAY + LETTER_COUNT * LETTER_STEP;
 
 /**
- * The hero is itself a Mondrian: the name in the big white field, the
- * tagline in the red block, and the two calls to action as the blue and
- * white blocks along the bottom. On phones it stacks into two columns.
+ * The hero, in three tidy rows beside one column of the three primaries:
+ *   name            │ red
+ *   tagline         │ yellow
+ *   work │ contact  │ blue
+ * Both calls to action are white cells that fill with colour on hover.
  */
 export function Hero() {
   const calm = useIsCalm();
@@ -50,9 +52,12 @@ export function Hero() {
 
   return (
     <section id="hero" className="shell pt-20 md:pt-24">
-      <Grid className="grid-cols-2 lg:grid-cols-[2.2fr_0.55fr_1.3fr_0.75fr] lg:grid-rows-[minmax(13rem,auto)_minmax(7rem,auto)_auto]">
-        {/* The name: the big white field */}
-        <Cell className="col-span-2 flex flex-col justify-end p-5 sm:p-8 lg:col-span-1 lg:row-span-2 lg:p-10">
+      <Grid
+        entrance="cascade"
+        className="grid-cols-[minmax(0,1fr)_minmax(0,1fr)_2.25rem] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_4rem]"
+      >
+        {/* Row 1: the name */}
+        <Cell order={0} className="col-span-2 p-5 sm:p-8 lg:px-10 lg:pt-14 lg:pb-10">
           <motion.p {...enter(0.2)} className="eyebrow flex flex-wrap items-center gap-x-3 gap-y-1">
             <span>@{profile.handle}</span>
             <span aria-hidden="true" className="text-line">
@@ -86,50 +91,42 @@ export function Hero() {
             </span>
           </h1>
         </Cell>
+        <Cell tone="red" grow="y" order={1} />
 
-        {/* Black square */}
-        <Cell tone="black" order={0} className="hidden lg:block" />
-
-        {/* The tagline, in the red block */}
-        <Cell tone="red" order={1} className="col-span-2 flex items-end p-5 sm:p-8 lg:col-span-2">
+        {/* Row 2: the tagline */}
+        <Cell order={2} className="col-span-2 p-5 sm:p-8 lg:px-10">
           <motion.p
             {...enter(AFTER_NAME)}
-            className="max-w-[30ch] text-balance text-lg font-medium leading-snug sm:text-xl lg:text-2xl"
+            className="max-w-[40ch] text-balance text-lg leading-snug text-muted sm:text-xl lg:text-2xl"
           >
             {profile.tagline}
           </motion.p>
         </Cell>
+        <Cell tone="yellow" grow="y" order={3} />
 
-        {/* Quiet white fields and the yellow block */}
-        <Cell className="hidden lg:block" />
-        <Cell className="hidden lg:block" />
-        <Cell tone="yellow" order={2} className="h-8 lg:h-auto" />
-        <Cell className="h-8 lg:hidden" />
-
-        {/* The calls to action are blocks too */}
-        <Cell tone="blue" order={3} className="col-span-1">
+        {/* Row 3: where to go next */}
+        <Cell order={4}>
           <button
             type="button"
-            onClick={() => scrollToSection("experience")}
-            className="group flex h-full min-h-16 w-full items-center justify-between gap-3 px-5 text-left text-sm font-semibold sm:px-8 sm:text-base"
+            onClick={() => scrollToSection("about")}
+            className="group flex h-full min-h-16 w-full items-center justify-between gap-3 px-5 text-left text-sm font-semibold transition-colors duration-200 hover:bg-m-blue hover:text-white focus-visible:bg-m-blue focus-visible:text-white sm:px-8 sm:text-base lg:px-10"
           >
             See the work
-            <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1 calm:group-hover:translate-x-0">
-              →
+            <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-y-0.5 calm:group-hover:translate-y-0">
+              ↓
             </span>
           </button>
         </Cell>
-        <Cell className="hidden lg:block" />
-        <Cell className="col-span-1">
+        <Cell order={5}>
           <button
             type="button"
             onClick={() => scrollToSection("contact")}
-            className="flex h-full min-h-16 w-full items-center px-5 text-left text-sm font-semibold transition-colors hover:bg-m-yellow sm:px-8 sm:text-base"
+            className="flex h-full min-h-16 w-full items-center px-5 text-left text-sm font-semibold transition-colors duration-200 hover:bg-m-yellow focus-visible:bg-m-yellow sm:px-8 sm:text-base lg:px-10"
           >
             Get in touch
           </button>
         </Cell>
-        <Cell className="hidden lg:block" />
+        <Cell tone="blue" grow="y" order={6} />
       </Grid>
     </section>
   );

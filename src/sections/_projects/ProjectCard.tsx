@@ -188,10 +188,11 @@ function CardLink({
   tone: "primary" | "quiet";
   children: ReactNode;
 }) {
+  // Every button on the page is white until hovered, then fills with a primary.
   const className =
     tone === "primary"
-      ? "border-2 border-ink bg-accent text-accent-ink hover:bg-accent-dim"
-      : "border-2 border-ink bg-surface text-text hover:bg-m-yellow";
+      ? "border-2 border-ink bg-surface text-text hover:bg-m-blue hover:text-white focus-visible:bg-m-blue focus-visible:text-white"
+      : "border-2 border-ink bg-surface text-text hover:bg-m-yellow focus-visible:bg-m-yellow";
 
   return (
     <a

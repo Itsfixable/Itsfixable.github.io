@@ -3,7 +3,8 @@
 import { contact, profile, socials, type Social } from "@/data/profile";
 import { IconArrowUpRight } from "@/components/_chrome/icons";
 import { isPlaceholder } from "@/components/_chrome/Placeholder";
-import { Cell, Grid, type Tone } from "@/components/mondrian/Grid";
+import { Cell, Swatch, type Tone } from "@/components/mondrian/Grid";
+import { Row, SectionFrame } from "@/components/mondrian/SectionFrame";
 
 /**
  * Evaluated once at module load. On a static export that is build time on the
@@ -12,8 +13,18 @@ import { Cell, Grid, type Tone } from "@/components/mondrian/Grid";
  */
 const YEAR = new Date().getFullYear();
 
-/** Each way to reach me is its own primary block. */
-const LINK_TONE: Record<string, Tone> = { email: "red", github: "blue", linkedin: "yellow" };
+/** Each way to reach me has its own colour: a small square, and its fill on hover. */
+const LINK_TONE: Record<string, Exclude<Tone, "paper" | "black">> = {
+  email: "red",
+  github: "blue",
+  linkedin: "yellow",
+};
+
+const HOVER_FILL = {
+  red: "hover:bg-m-red hover:text-white focus-visible:bg-m-red focus-visible:text-white",
+  blue: "hover:bg-m-blue hover:text-white focus-visible:bg-m-blue focus-visible:text-white",
+  yellow: "hover:bg-m-yellow focus-visible:bg-m-yellow",
+} as const;
 
 /** The only usable href for a social, or null when it is still a gap. */
 function socialHref(social: Social): string | null {
@@ -30,44 +41,51 @@ const linked = socials
 
 export function Contact() {
   return (
-    <section id="contact" className="shell pb-16 md:pb-24">
-      <Grid joined className="grid-cols-1 sm:grid-cols-3 lg:grid-cols-[2fr_1fr_1fr_1fr]">
-        <Cell className="p-5 sm:col-span-3 sm:p-8 lg:col-span-1 lg:p-10">
-          <p className="eyebrow">Contact</p>
-          <h2 className="mt-4 text-headline font-semibold">{contact.heading}</h2>
-          {!isPlaceholder(contact.body) ? (
-            <p className="mt-5 max-w-[40ch] text-lg leading-relaxed text-muted">{contact.body}</p>
-          ) : null}
-        </Cell>
+    <div className="pb-16 md:pb-24">
+      <SectionFrame
+        id="contact"
+        entrance="rise"
+        title={contact.heading}
+        intro={
+          !isPlaceholder(contact.body) ? (
+            <p className="max-w-[46ch] text-lg leading-relaxed text-muted">{contact.body}</p>
+          ) : null
+        }
+      >
+        <Row label="Reach me" flush>
+          <div className="mondrian-grid h-full grid-cols-1 border-0 sm:grid-cols-3">
+            {linked.map(({ social, href }) => {
+              const isMail = href.startsWith("mailto:");
+              const tone = LINK_TONE[social.id] ?? "blue";
+              return (
+                <Cell key={social.id}>
+                  <a
+                    href={href}
+                    {...(isMail ? {} : { target: "_blank", rel: "noreferrer noopener" })}
+                    className={`group flex h-full min-h-28 flex-col justify-between gap-6 p-5 transition-colors duration-200 sm:p-6 ${HOVER_FILL[tone]}`}
+                  >
+                    <span className="flex items-center justify-between font-mono text-xs tracking-[0.16em] uppercase">
+                      <span className="flex items-center gap-2">
+                        <Swatch tone={tone} className="group-hover:bg-current group-focus-visible:bg-current" />
+                        {social.label}
+                      </span>
+                      <IconArrowUpRight className="shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    </span>
+                    <span className="truncate text-sm font-medium">{social.value}</span>
+                    {isMail ? null : <span className="sr-only">(opens in a new tab)</span>}
+                  </a>
+                </Cell>
+              );
+            })}
+          </div>
+        </Row>
+      </SectionFrame>
 
-        {linked.map(({ social, href }, index) => {
-          const isMail = href.startsWith("mailto:");
-          return (
-            <Cell key={social.id} tone={LINK_TONE[social.id] ?? "paper"} order={index}>
-              <a
-                href={href}
-                {...(isMail ? {} : { target: "_blank", rel: "noreferrer noopener" })}
-                className="group flex h-full min-h-28 flex-col justify-between gap-6 p-5 sm:p-6"
-              >
-                <span className="flex items-center justify-between font-mono text-xs tracking-[0.16em] uppercase">
-                  {social.label}
-                  <IconArrowUpRight className="shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 calm:group-hover:translate-0" />
-                </span>
-                <span className="truncate text-sm font-medium underline-offset-4 group-hover:underline">
-                  {social.value}
-                </span>
-                {isMail ? null : <span className="sr-only">(opens in a new tab)</span>}
-              </a>
-            </Cell>
-          );
-        })}
-
-        <Cell tone="black" order={3} className="px-5 py-4 sm:col-span-3 sm:px-8 lg:col-span-4">
-          <footer className="font-mono text-[11px] tracking-[0.14em] uppercase">
-            © <span suppressHydrationWarning>{YEAR}</span> {profile.name} · @{profile.handle}
-          </footer>
-        </Cell>
-      </Grid>
-    </section>
+      <footer className="shell mt-6 flex flex-wrap items-center justify-between gap-3 font-mono text-[11px] tracking-[0.14em] text-faint uppercase">
+        <span>
+          © <span suppressHydrationWarning>{YEAR}</span> {profile.name} · @{profile.handle}
+        </span>
+      </footer>
+    </div>
   );
 }

@@ -57,7 +57,7 @@ export function ResumeButton({ tone = "ghost", size = "sm", className = "" }: Re
         tone === "solid"
           ? "border-2 border-ink bg-accent text-accent-ink hover:bg-accent-dim"
           : tone === "cell"
-            ? "bg-m-yellow text-ink hover:bg-ink hover:text-white"
+            ? "bg-surface text-ink hover:bg-m-yellow focus-visible:bg-m-yellow"
             : "border-2 border-ink bg-surface text-text hover:bg-m-yellow"
       } ${className}`}
     >

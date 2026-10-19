@@ -85,9 +85,9 @@
   :root {
     color-scheme: light;
     /* Thickness of the Mondrian lines. */
-    --rule: 4px;
+    --rule: 3px;
     @media (width >= 48rem) {
-      --rule: 6px;
+      --rule: 4px;
     }
     /* Lenis drives scrolling; native smooth scroll would fight it. */
     scroll-behavior: auto;

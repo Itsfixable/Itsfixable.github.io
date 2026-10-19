@@ -10,6 +10,22 @@ import { ResumeButton } from "./_chrome/ResumeButton";
 const ACTIVE_LINE = 112;
 
 
+/**
+ * A slim bar in the section's own colour under the current section, and the
+ * same bar on hover. Full static class strings so Tailwind can see them.
+ */
+const UNDERLINE = {
+  red: "shadow-[inset_0_-4px_0_0_var(--color-m-red)]",
+  blue: "shadow-[inset_0_-4px_0_0_var(--color-m-blue)]",
+  yellow: "shadow-[inset_0_-4px_0_0_var(--color-m-yellow)]",
+} as const;
+
+const HOVER_UNDERLINE = {
+  red: "hover:shadow-[inset_0_-4px_0_0_var(--color-m-red)]",
+  blue: "hover:shadow-[inset_0_-4px_0_0_var(--color-m-blue)]",
+  yellow: "hover:shadow-[inset_0_-4px_0_0_var(--color-m-yellow)]",
+} as const;
+
 export function Nav() {
   const [activeId, setActiveId] = useState<SectionId | null>(null);
   const [condensed, setCondensed] = useState(false);
@@ -145,16 +161,18 @@ export function Nav() {
           <ul className="hidden min-w-0 items-stretch lg:flex">
             {navSections.map((section) => {
               const active = activeId === section.id;
+              const tone = section.tone ?? "blue";
               return (
                 <li key={section.id} className="flex min-w-0 border-r-[length:var(--rule)] border-ink">
                   <a
                     href={`#${section.id}`}
                     onClick={jump(section.id)}
                     aria-current={active ? "true" : undefined}
-                    className={`flex items-center whitespace-nowrap px-3 text-sm transition-colors xl:px-4 ${
-                      active ? "bg-m-blue font-medium text-white" : "text-text hover:bg-m-yellow"
+                    className={`flex items-center gap-2 whitespace-nowrap px-3 text-sm transition-[box-shadow,color] duration-200 xl:px-4 ${
+                      active ? `font-medium text-text ${UNDERLINE[tone]}` : `text-muted hover:text-text ${HOVER_UNDERLINE[tone]}`
                     }`}
                   >
+                    <span className="font-mono text-[0.625rem] tabular-nums text-faint">{section.number}</span>
                     {section.label}
                   </a>
                 </li>

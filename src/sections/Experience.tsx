@@ -3,12 +3,9 @@
 import { Fragment } from "react";
 import dynamic from "next/dynamic";
 import { experience, type ExperienceEntry } from "@/data/profile";
-import { sections } from "@/lib/sections";
-import { Cell, Grid, type Tone } from "@/components/mondrian/Grid";
+import { Row, SectionFrame } from "@/components/mondrian/SectionFrame";
 import { TechChip } from "@/components/TechChip";
 import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
-
-const META = sections.find((section) => section.id === "experience");
 
 const LAB_HEIGHT = "44rem";
 
@@ -24,50 +21,29 @@ const QueryLab = dynamic(
   },
 );
 
-/** The internship's date block is blue; the hardware year is yellow. */
-const DATE_TONE: Record<string, Tone> = { rox: "blue", hardware: "yellow" };
-
-function Entry({ entry, order }: { entry: ExperienceEntry; order: number }) {
-  const tone = DATE_TONE[entry.id] ?? "paper";
-
+function EntryBody({ entry }: { entry: ExperienceEntry }) {
   return (
     <>
-      <Cell tone={tone} order={order} className="p-5 sm:p-6 lg:p-8">
-        <p className={`font-mono text-xs tracking-[0.12em] uppercase ${tone === "paper" ? "text-faint" : ""}`}>
-          {entry.when}
-        </p>
-      </Cell>
+      <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{entry.org}</h3>
+      <p className="mt-1 text-base text-muted">{entry.role}</p>
 
-      <Cell className="p-5 sm:p-6 lg:p-8">
-        <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{entry.org}</h3>
-        <p className="mt-1 text-base text-muted">{entry.role}</p>
+      <ul className="mt-5 flex flex-col gap-2.5">
+        {entry.highlights.map((highlight) => (
+          <li key={highlight} className="flex items-baseline gap-3 text-base leading-relaxed">
+            <span aria-hidden="true" className="size-2 shrink-0 translate-y-[-0.1em] bg-ink" />
+            <span>{highlight}</span>
+          </li>
+        ))}
+      </ul>
 
-        <ul className="mt-5 flex flex-col gap-2.5">
-          {entry.highlights.map((highlight) => (
-            <li key={highlight} className="flex items-baseline gap-3 text-base leading-relaxed">
-              <span aria-hidden="true" className="size-2 shrink-0 translate-y-[-0.1em] bg-ink" />
-              <span>{highlight}</span>
+      {entry.stack.length > 0 ? (
+        <ul className="mt-5 flex flex-wrap gap-2">
+          {entry.stack.map((item) => (
+            <li key={item}>
+              <TechChip name={item} />
             </li>
           ))}
         </ul>
-
-        {entry.stack.length > 0 ? (
-          <ul className="mt-5 flex flex-wrap gap-2">
-            {entry.stack.map((item) => (
-              <li key={item}>
-                <TechChip name={item} />
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </Cell>
-
-      {entry.demo === "query-lab" ? (
-        <Cell className="lg:col-span-2">
-          <LazyMount minHeight={LAB_HEIGHT} label="Query lab">
-            <QueryLab />
-          </LazyMount>
-        </Cell>
       ) : null}
     </>
   );
@@ -75,21 +51,21 @@ function Entry({ entry, order }: { entry: ExperienceEntry; order: number }) {
 
 export function Experience() {
   return (
-    <section id="experience" className="shell">
-      <Grid joined className="grid-cols-1 lg:grid-cols-[14rem_minmax(0,1fr)]">
-        <Cell tone="red" order={0} className="flex items-end p-5 sm:p-6 lg:p-8">
-          <p className="eyebrow !text-white">{META?.label ?? "Experience"}</p>
-        </Cell>
-        <Cell className="p-5 sm:p-6 lg:p-8">
-          <h2 className="text-headline font-medium">Internship, competitions, hardware</h2>
-        </Cell>
-
-        {experience.map((entry, index) => (
-          <Fragment key={entry.id}>
-            <Entry entry={entry} order={index + 1} />
-          </Fragment>
-        ))}
-      </Grid>
-    </section>
+    <SectionFrame id="experience" entrance="split" title="Internship, competitions, hardware">
+      {experience.map((entry) => (
+        <Fragment key={entry.id}>
+          <Row label={entry.when}>
+            <EntryBody entry={entry} />
+          </Row>
+          {entry.demo === "query-lab" ? (
+            <Row label="Try it" flush>
+              <LazyMount minHeight={LAB_HEIGHT} label="Query lab">
+                <QueryLab />
+              </LazyMount>
+            </Row>
+          ) : null}
+        </Fragment>
+      ))}
+    </SectionFrame>
   );
 }

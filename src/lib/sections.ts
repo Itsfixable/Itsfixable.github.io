@@ -22,15 +22,34 @@ export type SectionMeta = {
   keywords: string[];
   /** Hidden from the nav bar (still reachable from the palette). */
   navHidden?: boolean;
+  /** Position in the reading order, shown as "01", "02"… */
+  number?: string;
+  /**
+   * The section's one colour: its square in the section header and the nav,
+   * and its hover fill. Used the same way in every section.
+   */
+  tone?: "red" | "blue" | "yellow";
 };
 
 export const sections: SectionMeta[] = [
   { id: "hero", label: "Top", title: "Back to top", keywords: ["home", "start", "hero"], navHidden: true },
-  { id: "about", label: "About", title: "About Koji", keywords: ["bio", "who"] },
-  { id: "experience", label: "Experience", title: "Experience", keywords: ["rox", "internship", "intern", "fbla", "hack club", "arduino", "query lab", "supabase", "tanstack"] },
-  { id: "ecopulse", label: "EcoPulse", title: "EcoPulse case study", keywords: ["diesel", "dreamhacks", "41", "case study", "game", "solver"] },
-  { id: "projects", label: "Korean Quest", title: "Korean Quest", keywords: ["project", "korean", "hangul", "tracing", "fbla"] },
-  { id: "contact", label: "Contact", title: "Contact", keywords: ["email", "hire", "resume", "linkedin"] },
+  { id: "about", label: "About", title: "About Koji", keywords: ["bio", "who"], number: "01", tone: "yellow" },
+  { id: "experience", label: "Experience", title: "Experience", keywords: ["rox", "internship", "intern", "fbla", "hack club", "arduino", "query lab", "supabase", "tanstack"], number: "02", tone: "blue" },
+  { id: "ecopulse", label: "EcoPulse", title: "EcoPulse case study", keywords: ["diesel", "dreamhacks", "41", "case study", "game", "solver"], number: "03", tone: "red" },
+  { id: "projects", label: "Korean Quest", title: "Korean Quest", keywords: ["project", "korean", "hangul", "tracing", "fbla"], number: "04", tone: "yellow" },
+  { id: "contact", label: "Contact", title: "Contact", keywords: ["email", "hire", "resume", "linkedin"], number: "05", tone: "blue" },
 ];
 
 export const navSections = sections.filter((s) => !s.navHidden);
+
+export function sectionMeta(id: SectionId): SectionMeta {
+  const meta = sections.find((section) => section.id === id);
+  if (!meta) throw new Error(`Unknown section: ${id}`);
+  return meta;
+}
+
+/** The section after `id` in reading order, for each section's "Next" row. */
+export function nextSection(id: SectionId): SectionMeta | null {
+  const index = navSections.findIndex((section) => section.id === id);
+  return index >= 0 && index < navSections.length - 1 ? navSections[index + 1] : null;
+}
