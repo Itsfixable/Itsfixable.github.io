@@ -1,29 +1,20 @@
 "use client";
 
-import { useRef } from "react";
-import {
-  motion,
-  useMotionTemplate,
-  useScroll,
-  useTransform,
-  type Transition,
-} from "framer-motion";
+import { motion, type Transition } from "framer-motion";
 import { profile } from "@/data/profile";
-import { EASE_IN_OUT, EASE_OUT, calmTransition, durations } from "@/lib/motion";
+import { EASE_OUT, calmTransition, durations } from "@/lib/motion";
 import { scrollToSection } from "@/lib/scroll";
-import { Composition } from "@/components/mondrian/Composition";
+import { Cell, Grid } from "@/components/mondrian/Grid";
 import { useIsCalm } from "@/store/ui";
 import { ValueOrPlaceholder } from "./_hero/Placeholder";
 
 /* ---------------------------------------------------------------------------
- * The name, pre-split at module scope (profile.name is static, so there is
- * nothing to memoise at render time).
+ * The name, pre-split at module scope (profile.name is static).
  *
  * Split per character for the animation, but grouped per word for layout: the
- * word is the unbreakable unit, and the gap between words is the only break
- * opportunity. That is what stops "Koji Tanaka" from snapping mid-word at
- * 375px. The `<h1>` carries the whole name as an aria-label and every letter
- * span is aria-hidden, so assistive tech reads one clean string.
+ * word is the unbreakable unit, so "Koji Tanaka" can only break between words.
+ * The `<h1>` carries the whole name as an aria-label and every letter span is
+ * aria-hidden, so assistive tech reads one clean string.
  * ------------------------------------------------------------------------- */
 
 type Letter = { char: string; order: number };
@@ -37,72 +28,32 @@ const NAME_WORDS: Letter[][] = (() => {
 
 const LETTER_COUNT = NAME_WORDS.reduce((total, word) => total + word.length, 0);
 
-/** Letter cadence. Tuned so the whole name lands in well under a second. */
-const LETTER_DELAY = 0.08;
+const LETTER_DELAY = 0.35;
 const LETTER_STEP = 0.035;
-/** Everything below the name queues up behind the last letter. */
 const AFTER_NAME = LETTER_DELAY + LETTER_COUNT * LETTER_STEP;
 
 /**
- * Scroll runway below the sticky hero. The section is `100svh` of sticky
- * content plus this, so scroll progress reaches ~0.41 at the moment the
- * sticky wrapper unsticks — hence the 0.4 end of every transform range below.
- * `calm:h-0` removes the runway entirely when motion is dialled down: with no
- * scroll-linked degrade there is nothing for the extra scroll to reveal.
+ * The hero is itself a Mondrian: the name in the big white field, the
+ * tagline in the red block, and the two calls to action as the blue and
+ * white blocks along the bottom. On phones it stacks into two columns.
  */
-const RUNWAY = "h-[70vh] calm:h-0";
-
 export function Hero() {
   const calm = useIsCalm();
-  const sectionRef = useRef<HTMLElement>(null);
 
-  /* Scroll-away degrade. The motion values are always created (hooks cannot
-     be conditional) but are only wired into `style` in wild mode. */
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-
-  const scale = useTransform(scrollYProgress, [0, 0.4], [1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0, 0.22, 0.38], [1, 0.8, 0]);
-  const blurPx = useTransform(scrollYProgress, [0, 0.4], [0, 12]);
-  const filter = useMotionTemplate`blur(${blurPx}px)`;
-
-  /* Calm gets an explicit neutral style rather than `undefined`, so toggling
-     the mode mid-session actively resets any transform the scroll had
-     already applied instead of leaving it stuck. */
-  const degrade = calm
-    ? { scale: 1, opacity: 1, filter: "none" }
-    : { scale, opacity, filter };
-
-  /* Mount entrance. In calm mode `calmTransition` collapses every delay to 0
-     and every duration to 0.01s, so the staggered reveal becomes one plain,
-     near-instant block — same end state, no choreography. */
   const enter = (delay: number) => ({
-    initial: { opacity: 0, y: calm ? 0 : 12 },
+    initial: { opacity: 0, y: calm ? 0 : 10 },
     animate: { opacity: 1, y: 0 },
-    transition: calmTransition(
-      { duration: durations.base, ease: EASE_OUT, delay },
-      calm,
-    ) satisfies Transition,
+    transition: calmTransition({ duration: durations.base, ease: EASE_OUT, delay }, calm) satisfies Transition,
   });
 
   const letterInitial = { opacity: 0, y: calm ? 0 : "55%" };
 
   return (
-    <section id="hero" ref={sectionRef} className="relative">
-      {/* Sticky so the hero stays in frame while it shrinks, blurs and fades. */}
-      <div className="sticky top-0 flex min-h-svh items-center pt-20">
-        <motion.div
-          style={degrade}
-          className="shell grid origin-left items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16"
-        >
-          <div className="min-w-0">
-          {/* Eyebrow: handle + role */}
-          <motion.p
-            {...enter(0)}
-            className="eyebrow flex flex-wrap items-center gap-x-3 gap-y-1"
-          >
+    <section id="hero" className="shell pt-20 md:pt-24">
+      <Grid className="grid-cols-2 lg:grid-cols-[2.2fr_0.55fr_1.3fr_0.75fr] lg:grid-rows-[minmax(13rem,auto)_minmax(7rem,auto)_auto]">
+        {/* The name: the big white field */}
+        <Cell className="col-span-2 flex flex-col justify-end p-5 sm:p-8 lg:col-span-1 lg:row-span-2 lg:p-10">
+          <motion.p {...enter(0.2)} className="eyebrow flex flex-wrap items-center gap-x-3 gap-y-1">
             <span>@{profile.handle}</span>
             <span aria-hidden="true" className="text-line">
               /
@@ -112,15 +63,8 @@ export function Hero() {
             </span>
           </motion.p>
 
-          {/* The name — letter by letter */}
-          <h1
-            aria-label={profile.name}
-            className="mt-6 text-display font-medium text-text"
-          >
-            <span
-              aria-hidden="true"
-              className="flex flex-wrap gap-x-[0.24em]"
-            >
+          <h1 aria-label={profile.name} className="mt-5 text-display font-medium text-text">
+            <span aria-hidden="true" className="flex flex-wrap gap-x-[0.24em]">
               {NAME_WORDS.map((word, wordIndex) => (
                 <span key={wordIndex} className="inline-flex">
                   {word.map(({ char, order }) => (
@@ -130,11 +74,7 @@ export function Hero() {
                       initial={letterInitial}
                       animate={{ opacity: 1, y: 0 }}
                       transition={calmTransition(
-                        {
-                          duration: durations.base,
-                          ease: EASE_OUT,
-                          delay: LETTER_DELAY + order * LETTER_STEP,
-                        },
+                        { duration: durations.base, ease: EASE_OUT, delay: LETTER_DELAY + order * LETTER_STEP },
                         calm,
                       )}
                     >
@@ -145,85 +85,52 @@ export function Hero() {
               ))}
             </span>
           </h1>
+        </Cell>
 
-          {/* Tagline */}
+        {/* Black square */}
+        <Cell tone="black" order={0} className="hidden lg:block" />
+
+        {/* The tagline, in the red block */}
+        <Cell tone="red" order={1} className="col-span-2 flex items-end p-5 sm:p-8 lg:col-span-2">
           <motion.p
-            {...enter(AFTER_NAME + 0.04)}
-            className="mt-7 max-w-[34ch] text-balance text-lg leading-snug text-muted sm:text-xl md:text-2xl"
+            {...enter(AFTER_NAME)}
+            className="max-w-[30ch] text-balance text-lg font-medium leading-snug sm:text-xl lg:text-2xl"
           >
             {profile.tagline}
           </motion.p>
+        </Cell>
 
-          {/* CTAs — the accent fill is the one bold accent in this section */}
-          <motion.div
-            {...enter(AFTER_NAME + 0.2)}
-            className="mt-10 flex flex-wrap items-center gap-3"
+        {/* Quiet white fields and the yellow block */}
+        <Cell className="hidden lg:block" />
+        <Cell className="hidden lg:block" />
+        <Cell tone="yellow" order={2} className="h-8 lg:h-auto" />
+        <Cell className="h-8 lg:hidden" />
+
+        {/* The calls to action are blocks too */}
+        <Cell tone="blue" order={3} className="col-span-1">
+          <button
+            type="button"
+            onClick={() => scrollToSection("experience")}
+            className="group flex h-full min-h-16 w-full items-center justify-between gap-3 px-5 text-left text-sm font-semibold sm:px-8 sm:text-base"
           >
-            <button
-              type="button"
-              onClick={() => scrollToSection("experience")}
-              className="group inline-flex items-center gap-2 rounded-none border-2 border-ink bg-accent px-6 py-3 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-dim"
-            >
-              See the work
-              <span
-                aria-hidden="true"
-                className="transition-transform duration-200 group-hover:translate-x-0.5"
-              >
-                →
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollToSection("contact")}
-              className="inline-flex items-center gap-2 rounded-none border-2 border-ink bg-surface px-6 py-3 text-sm font-medium text-text transition-colors hover:bg-m-yellow"
-            >
-              Get in touch
-            </button>
-          </motion.div>
-
-          {/* Scroll cue */}
-          <motion.div {...enter(AFTER_NAME + 0.3)} className="mt-14 md:mt-20">
-            <button
-              type="button"
-              onClick={() => scrollToSection("about")}
-              className="group inline-flex items-center gap-3"
-            >
-              <span
-                aria-hidden="true"
-                className="relative block h-10 w-px overflow-hidden bg-line"
-              >
-                {/* Travelling tick in wild mode; a solid rule in calm mode,
-                    where the looping animation is dropped entirely. */}
-                <motion.span
-                  className="absolute inset-x-0 top-0 block h-3 bg-muted calm:h-full"
-                  animate={calm ? { y: 0 } : { y: ["-100%", "350%"] }}
-                  transition={
-                    calm
-                      ? { duration: 0.01 }
-                      : {
-                          duration: 1.8,
-                          ease: EASE_IN_OUT,
-                          repeat: Infinity,
-                          repeatDelay: 0.2,
-                        }
-                  }
-                />
-              </span>
-              <span className="eyebrow transition-colors group-hover:text-muted">
-                Scroll
-              </span>
-            </button>
-          </motion.div>
-          </div>
-
-          {/* The Mondrian composition: lines spiral in, then the colour
-              blocks land. Beside the name on wide screens, under it on phones. */}
-          <Composition delay={0.15} className="aspect-[640/336] w-full" />
-        </motion.div>
-      </div>
-
-      {/* Scroll runway for the degrade. Purely structural. */}
-      <div aria-hidden="true" className={RUNWAY} />
+            See the work
+            <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1 calm:group-hover:translate-x-0">
+              →
+            </span>
+          </button>
+        </Cell>
+        <Cell className="hidden lg:block" />
+        <Cell className="col-span-1">
+          <button
+            type="button"
+            onClick={() => scrollToSection("contact")}
+            className="flex h-full min-h-16 w-full items-center px-5 text-left text-sm font-semibold transition-colors hover:bg-m-yellow sm:px-8 sm:text-base"
+          >
+            Get in touch
+          </button>
+        </Cell>
+        <Cell className="hidden lg:block" />
+      </Grid>
     </section>
   );
 }

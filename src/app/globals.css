@@ -84,6 +84,11 @@
 @layer base {
   :root {
     color-scheme: light;
+    /* Thickness of the Mondrian lines. */
+    --rule: 4px;
+    @media (width >= 48rem) {
+      --rule: 6px;
+    }
     /* Lenis drives scrolling; native smooth scroll would fight it. */
     scroll-behavior: auto;
   }
@@ -189,6 +194,14 @@
   @media (width >= 48rem) {
     padding-block: 8.5rem;
   }
+}
+
+/* A Mondrian painting: black grid whose gaps and frame are the thick rules. */
+@utility mondrian-grid {
+  display: grid;
+  gap: var(--rule);
+  background-color: var(--color-ink);
+  border: var(--rule) solid var(--color-ink);
 }
 
 /* Subtle card surface. */

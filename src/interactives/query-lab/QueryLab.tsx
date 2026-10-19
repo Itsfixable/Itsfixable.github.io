@@ -109,7 +109,7 @@ export function QueryLab() {
 
 function NotConfigured() {
   return (
-    <div className="card p-6 sm:p-8">
+    <div className="bg-surface p-6 sm:p-8">
       <p className="eyebrow">Query lab</p>
       <p className="mt-3 max-w-[60ch] text-sm leading-relaxed text-muted">
         This demo reads from a Supabase database, and this build was made without its
@@ -257,7 +257,7 @@ function Lab() {
   const showingStale = isPlaceholderData && query.isFetching;
 
   return (
-    <div className="card overflow-hidden">
+    <div className="overflow-hidden bg-surface">
       {/* minmax(0,1fr) on phones too: an implicit grid column would grow to
           the wide table's full width and get clipped by the card. */}
       <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_21rem]">
@@ -446,7 +446,7 @@ function Lab() {
           </div>
         </div>
 
-        <div className="border-t border-line bg-surface-2/60 p-4 sm:p-6 lg:border-t-0 lg:border-l">
+        <div className="border-t-[length:var(--rule)] border-ink bg-surface-2/60 p-4 sm:p-6 lg:border-t-0 lg:border-l-[length:var(--rule)]">
           <Inspector />
         </div>
       </div>

@@ -1,11 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
 import { ecoPulse, projects } from "@/data/profile";
-import { revealVariants, staggerParent, viewportOnce } from "@/lib/motion";
-import { useIsCalm } from "@/store/ui";
-import { SectionRule } from "@/components/mondrian/SectionRule";
+import { Cell, Grid } from "@/components/mondrian/Grid";
 import { TechChip } from "@/components/TechChip";
 import { MetricCounter } from "./_ecopulse/MetricCounter";
 import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
@@ -22,17 +19,14 @@ const BeatTheSolver = dynamic(
 );
 
 /**
- * The EcoPulse case study: Problem -> Approach -> Result, with the headline
- * reduction as the one loud thing in the section and a hand-rolled SVG chart
- * underneath it.
+ * The EcoPulse case study as one Mondrian: the headline reduction is the big
+ * red block, Problem / Approach / Result fill the white fields beside and
+ * below it, and the playable version of the dispatcher spans the full width.
  *
  * Every string comes from `src/data/profile.ts`.
  */
 
 const project = projects.find((p) => p.id === "ecopulse") ?? null;
-
-/** The two setup beats. The third beat (Result) gets the metric treatment. */
-const setupBeats = [ecoPulse.problem, ecoPulse.approach] as const;
 
 const meta: { term: string; value: string }[] = [
   { term: "Event", value: ecoPulse.event },
@@ -44,184 +38,103 @@ const meta: { term: string; value: string }[] = [
 /** `https://host/path` -> `host/path`, so the link shows where it goes. */
 const demoHost = ecoPulse.demo.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
-export function EcoPulse() {
-  const calm = useIsCalm();
-  const parent = staggerParent(calm);
-  const child = revealVariants(calm);
-
+function Beat({ number, title, body }: { number: number; title: string; body: string }) {
   return (
-    <section id="ecopulse" className="relative">
-      <div className="shell">
-        <SectionRule tone="blue" />
-      </div>
+    <>
+      <p className="font-mono text-sm tabular-nums text-faint">{String(number).padStart(2, "0")}</p>
+      <h3 className="mt-3 text-2xl font-semibold tracking-tight md:text-3xl">{title}</h3>
+      <p className="mt-4 max-w-[52ch] text-base leading-relaxed text-muted md:text-lg">{body}</p>
+    </>
+  );
+}
 
-      <div className="shell section-y">
-        {/* ------------------------------------------------- masthead */}
-        <motion.header
-          initial="hidden"
-          whileInView="shown"
-          viewport={viewportOnce}
-          variants={parent}
-          className="grid gap-x-12 gap-y-9 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end"
-        >
-          <motion.div variants={child}>
-            <p className="eyebrow">Case study</p>
-            <h2 className="mt-5 text-headline font-semibold text-text">{ecoPulse.project}</h2>
+export function EcoPulse() {
+  return (
+    <section id="ecopulse" className="shell">
+      <Grid joined className="grid-cols-2 lg:grid-cols-4">
+        {/* Label + title */}
+        <Cell tone="blue" order={0} className="col-span-2 flex items-end p-5 sm:p-6 lg:col-span-1 lg:p-8">
+          <p className="eyebrow !text-white">Case study</p>
+        </Cell>
+        <Cell className="col-span-2 flex flex-col gap-5 p-5 sm:p-8 lg:col-span-3 lg:flex-row lg:items-end lg:justify-between lg:p-10">
+          <div>
+            <h2 className="text-headline font-semibold">{ecoPulse.project}</h2>
             {project ? (
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl md:leading-relaxed">
-                {project.tagline}
-              </p>
+              <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">{project.tagline}</p>
             ) : null}
-          </motion.div>
-
-          <motion.div variants={child} className="lg:pb-2">
-            <a
-              href={ecoPulse.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex max-w-full items-center gap-3 rounded-none border border-line bg-surface px-5 py-3 text-sm font-medium text-text transition-colors hover:border-faint hover:bg-surface-2 sm:px-6"
-            >
-              <span className="whitespace-nowrap">Live demo</span>
-              <span className="sr-only">(opens in a new tab)</span>
-              <span className="truncate font-mono text-xs text-faint transition-colors group-hover:text-muted">
-                {demoHost}
-              </span>
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 16 16"
-                className="h-3.5 w-3.5 shrink-0 text-faint transition-colors group-hover:text-text"
-              >
-                <path
-                  d="M4 12 12 4M6 4h6v6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                />
-              </svg>
-            </a>
-          </motion.div>
-        </motion.header>
-
-        {/* ------------------------------------------------- credits */}
-        <motion.dl
-          initial="hidden"
-          whileInView="shown"
-          viewport={viewportOnce}
-          variants={parent}
-          className="mt-12 grid grid-cols-2 gap-x-6 gap-y-7 border-t border-line pt-8 sm:grid-cols-4"
-        >
-          {meta.map((row) => (
-            <motion.div key={row.term} variants={child}>
-              <dt className="eyebrow">{row.term}</dt>
-              <dd className="mt-2 text-sm text-text sm:text-base">{row.value}</dd>
-            </motion.div>
-          ))}
-        </motion.dl>
-
-        {/* ------------------------------------------------- narrative */}
-        <motion.ol
-          initial="hidden"
-          whileInView="shown"
-          viewport={viewportOnce}
-          variants={parent}
-          className="mt-20 space-y-16 md:mt-28 md:space-y-24"
-        >
-          {setupBeats.map((beat, index) => (
-            <motion.li
-              key={beat.title}
-              variants={child}
-              className="grid gap-x-10 gap-y-5 md:grid-cols-[6rem_minmax(0,1fr)]"
-            >
-              <div className="flex items-center gap-4 md:block">
-                <span className="font-mono text-sm tabular-nums text-faint">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span aria-hidden="true" className="hairline block w-full md:mt-5" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold tracking-tight text-text md:text-3xl">
-                  {beat.title}
-                </h3>
-                <p className="mt-5 max-w-[48ch] text-lg leading-relaxed text-muted md:text-xl md:leading-[1.65]">
-                  {beat.body}
-                </p>
-              </div>
-            </motion.li>
-          ))}
-        </motion.ol>
-
-        {/* ------------------------------------------------- the result */}
-        <motion.div
-          initial="hidden"
-          whileInView="shown"
-          viewport={viewportOnce}
-          variants={parent}
-          className="card mt-16 md:mt-24"
-        >
-          <div className="grid gap-x-16 gap-y-10 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:p-14">
-            <motion.div variants={child}>
-              <p className="eyebrow">Headline result</p>
-              <MetricCounter
-                value={ecoPulse.headlineMetric.value}
-                unit={ecoPulse.headlineMetric.unit}
-                label={ecoPulse.headlineMetric.label}
-                className="mt-6 text-display font-semibold text-accent"
-              />
-              <p className="mt-4 text-xl font-medium tracking-tight text-text md:text-2xl">
-                {ecoPulse.headlineMetric.label}
-              </p>
-              <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-faint">
-                {ecoPulse.headlineMetric.caption}
-              </p>
-            </motion.div>
-
-            <motion.div variants={child} className="lg:border-l lg:border-line lg:pl-16">
-              <div className="flex items-center gap-4">
-                <span className="font-mono text-sm tabular-nums text-faint">
-                  {String(setupBeats.length + 1).padStart(2, "0")}
-                </span>
-                <span aria-hidden="true" className="hairline block w-full" />
-              </div>
-              <h3 className="mt-5 text-2xl font-semibold tracking-tight text-text md:text-3xl">
-                {ecoPulse.result.title}
-              </h3>
-              <p className="mt-5 max-w-[48ch] text-lg leading-relaxed text-muted">
-                {ecoPulse.result.body}
-              </p>
-            </motion.div>
           </div>
-        </motion.div>
+          <a
+            href={ecoPulse.demo}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex max-w-full shrink-0 items-center gap-3 border-2 border-ink bg-surface px-5 py-3 text-sm font-medium transition-colors hover:bg-m-yellow"
+          >
+            <span className="whitespace-nowrap">Live demo</span>
+            <span className="sr-only">(opens in a new tab)</span>
+            <span className="truncate font-mono text-xs text-faint group-hover:text-ink">{demoHost}</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </Cell>
 
-        {/* ------------------------------------------------- the game */}
-        <div className="mt-16 md:mt-24">
+        {/* Credits */}
+        {meta.map((row) => (
+          <Cell key={row.term} className="p-5 sm:p-6">
+            <dl>
+              <dt className="eyebrow">{row.term}</dt>
+              <dd className="mt-2 text-sm sm:text-base">{row.value}</dd>
+            </dl>
+          </Cell>
+        ))}
+
+        {/* The headline number: the red block */}
+        <Cell tone="red" order={1} className="col-span-2 flex flex-col justify-end p-5 sm:p-8 lg:row-span-2 lg:p-10">
+          <p className="eyebrow !text-white/85">Headline result</p>
+          <MetricCounter
+            value={ecoPulse.headlineMetric.value}
+            unit={ecoPulse.headlineMetric.unit}
+            label={ecoPulse.headlineMetric.label}
+            className="mt-4 text-display font-semibold"
+          />
+          <p className="mt-2 text-xl font-medium md:text-2xl">{ecoPulse.headlineMetric.label}</p>
+          <p className="mt-3 max-w-[40ch] text-sm leading-relaxed text-white/85">{ecoPulse.headlineMetric.caption}</p>
+        </Cell>
+
+        <Cell className="col-span-2 p-5 sm:p-8">
+          <Beat number={1} title={ecoPulse.problem.title} body={ecoPulse.problem.body} />
+        </Cell>
+        <Cell className="col-span-2 p-5 sm:p-8">
+          <Beat number={2} title={ecoPulse.approach.title} body={ecoPulse.approach.body} />
+        </Cell>
+
+        <Cell className="col-span-2 p-5 sm:p-8 lg:col-span-3">
+          <Beat number={3} title={ecoPulse.result.title} body={ecoPulse.result.body} />
+        </Cell>
+        <Cell tone="yellow" order={2} className="hidden lg:block" />
+
+        {/* The game, full width */}
+        <Cell className="col-span-2 lg:col-span-4">
           <LazyMount minHeight={GAME_HEIGHT} label="Can you match the solver?">
             <BeatTheSolver />
           </LazyMount>
-        </div>
+        </Cell>
 
-        {/* ------------------------------------------------- stack */}
+        {/* Stack */}
         {project && project.stack.length > 0 ? (
-          <motion.div
-            initial="hidden"
-            whileInView="shown"
-            viewport={viewportOnce}
-            variants={parent}
-            className="mt-14 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-line pt-8"
-          >
-            <motion.p variants={child} className="eyebrow">
-              Stack
-            </motion.p>
-            <ul className="flex flex-wrap gap-2">
-              {project.stack.map((item) => (
-                <motion.li key={item} variants={child}>
-                  <TechChip name={item} />
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
+          <>
+            <Cell className="col-span-2 flex flex-wrap items-center gap-x-5 gap-y-3 p-5 sm:p-6 lg:col-span-3">
+              <p className="eyebrow">Stack</p>
+              <ul className="flex flex-wrap gap-2">
+                {project.stack.map((item) => (
+                  <li key={item}>
+                    <TechChip name={item} />
+                  </li>
+                ))}
+              </ul>
+            </Cell>
+            <Cell tone="black" order={3} className="hidden lg:block" />
+          </>
         ) : null}
-      </div>
+      </Grid>
     </section>
   );
 }

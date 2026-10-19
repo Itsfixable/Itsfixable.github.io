@@ -8,17 +8,16 @@ import { TechChip } from "@/components/TechChip";
 
 /**
  * One project. Identical content in both layouts — the only difference is the
- * box: a fixed-width panel in the pinned rail, a full-width block in the
- * stacked column.
+ * box: a framed card in a list, or bare content filling a Mondrian grid cell
+ * (the grid's black lines are its frame).
  */
-export type ProjectCardVariant = "rail" | "stack";
+export type ProjectCardVariant = "stack" | "cell";
 
 type ProjectCardProps = {
   project: Project;
   index: number;
   total: number;
   variant: ProjectCardVariant;
-  /** The rail uses this to scroll a keyboard-focused card back into view. */
   onFocus?: FocusEventHandler<HTMLLIElement>;
   /** False when the surrounding section already shows the project's name. */
   showName?: boolean;
@@ -70,24 +69,20 @@ function Meta({ label, value }: { label: string; value: string }) {
 }
 
 export function ProjectCard({ project, index, total, variant, onFocus, showName = true }: ProjectCardProps) {
-  // Called unconditionally; `variant` never changes for a mounted card, because
-  // the rail and the stacked column are separate subtrees.
+  // Called unconditionally; `variant` never changes for a mounted card.
   const reveal = useReveal({ index, distance: 20, amount: 0.2 });
-  const rail = variant === "rail";
+  const cell = variant === "cell";
   const status = statusMeta[project.status];
   const hasLinks = Boolean(project.demo ?? project.repo);
 
-  return (
-    <motion.li
-      {...(rail ? {} : reveal)}
-      onFocus={onFocus}
-      className={
-        rail
-          ? "w-[min(86vw,40rem)] shrink-0 xl:w-[44rem]"
-          : "w-full"
-      }
-    >
-      <article className="card flex h-full flex-col gap-5 overflow-hidden p-6 md:gap-6 md:p-8">
+  const article = (
+      <article
+        className={
+          cell
+            ? "flex h-full flex-col gap-5 p-5 sm:p-6 md:gap-6 lg:p-8"
+            : "card flex h-full flex-col gap-5 overflow-hidden p-6 md:gap-6 md:p-8"
+        }
+      >
         <div className="flex items-start justify-between gap-4">
           {/* A counter only means something when there is more than one card. */}
           {total > 1 ? (
@@ -173,6 +168,13 @@ export function ProjectCard({ project, index, total, variant, onFocus, showName 
           )}
         </div>
       </article>
+  );
+
+  if (cell) return article;
+
+  return (
+    <motion.li {...reveal} onFocus={onFocus} className="w-full">
+      {article}
     </motion.li>
   );
 }

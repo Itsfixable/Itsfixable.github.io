@@ -1,12 +1,10 @@
 "use client";
 
+import { Fragment } from "react";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
 import { experience, type ExperienceEntry } from "@/data/profile";
-import { revealVariants, staggerParent, useReveal, viewportOnce } from "@/lib/motion";
 import { sections } from "@/lib/sections";
-import { useIsCalm } from "@/store/ui";
-import { SectionRule } from "@/components/mondrian/SectionRule";
+import { Cell, Grid, type Tone } from "@/components/mondrian/Grid";
 import { TechChip } from "@/components/TechChip";
 import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
 
@@ -26,81 +24,72 @@ const QueryLab = dynamic(
   },
 );
 
-function Entry({ entry }: { entry: ExperienceEntry }) {
-  const calm = useIsCalm();
-  const parent = staggerParent(calm);
-  const child = revealVariants(calm, 16);
+/** The internship's date block is blue; the hardware year is yellow. */
+const DATE_TONE: Record<string, Tone> = { rox: "blue", hardware: "yellow" };
+
+function Entry({ entry, order }: { entry: ExperienceEntry; order: number }) {
+  const tone = DATE_TONE[entry.id] ?? "paper";
 
   return (
-    <motion.li
-      initial="hidden"
-      whileInView="shown"
-      viewport={viewportOnce}
-      variants={parent}
-      className="border-t border-line py-10 md:py-12"
-    >
-      <div className="grid gap-x-12 gap-y-4 lg:grid-cols-[14rem_minmax(0,1fr)]">
-        <motion.p variants={child} className="font-mono text-xs tracking-[0.12em] text-faint uppercase lg:pt-2">
+    <>
+      <Cell tone={tone} order={order} className="p-5 sm:p-6 lg:p-8">
+        <p className={`font-mono text-xs tracking-[0.12em] uppercase ${tone === "paper" ? "text-faint" : ""}`}>
           {entry.when}
-        </motion.p>
+        </p>
+      </Cell>
 
-        <div className="min-w-0">
-          <motion.h3 variants={child} className="text-2xl font-semibold tracking-tight text-text md:text-3xl">
-            {entry.org}
-          </motion.h3>
-          <motion.p variants={child} className="mt-1 text-base text-muted">
-            {entry.role}
-          </motion.p>
+      <Cell className="p-5 sm:p-6 lg:p-8">
+        <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{entry.org}</h3>
+        <p className="mt-1 text-base text-muted">{entry.role}</p>
 
-          <motion.ul variants={child} className="mt-5 flex flex-col gap-2.5">
-            {entry.highlights.map((highlight) => (
-              <li key={highlight} className="flex items-baseline gap-3 text-base leading-relaxed text-text">
-                <span aria-hidden="true" className="size-1.5 shrink-0 translate-y-[-0.1em] rounded-none bg-accent" />
-                <span>{highlight}</span>
+        <ul className="mt-5 flex flex-col gap-2.5">
+          {entry.highlights.map((highlight) => (
+            <li key={highlight} className="flex items-baseline gap-3 text-base leading-relaxed">
+              <span aria-hidden="true" className="size-2 shrink-0 translate-y-[-0.1em] bg-ink" />
+              <span>{highlight}</span>
+            </li>
+          ))}
+        </ul>
+
+        {entry.stack.length > 0 ? (
+          <ul className="mt-5 flex flex-wrap gap-2">
+            {entry.stack.map((item) => (
+              <li key={item}>
+                <TechChip name={item} />
               </li>
             ))}
-          </motion.ul>
-
-          {entry.stack.length > 0 ? (
-            <motion.ul variants={child} className="mt-5 flex flex-wrap gap-2">
-              {entry.stack.map((item) => (
-                <li key={item}>
-                  <TechChip name={item} />
-                </li>
-              ))}
-            </motion.ul>
-          ) : null}
-        </div>
-      </div>
+          </ul>
+        ) : null}
+      </Cell>
 
       {entry.demo === "query-lab" ? (
-        <motion.div variants={child} className="mt-10">
+        <Cell className="lg:col-span-2">
           <LazyMount minHeight={LAB_HEIGHT} label="Query lab">
             <QueryLab />
           </LazyMount>
-        </motion.div>
+        </Cell>
       ) : null}
-    </motion.li>
+    </>
   );
 }
 
 export function Experience() {
-  const reveal = useReveal();
-
   return (
-    <section id="experience" className="shell section-y">
-      <SectionRule tone="red" />
+    <section id="experience" className="shell">
+      <Grid joined className="grid-cols-1 lg:grid-cols-[14rem_minmax(0,1fr)]">
+        <Cell tone="red" order={0} className="flex items-end p-5 sm:p-6 lg:p-8">
+          <p className="eyebrow !text-white">{META?.label ?? "Experience"}</p>
+        </Cell>
+        <Cell className="p-5 sm:p-6 lg:p-8">
+          <h2 className="text-headline font-medium">Internship, competitions, hardware</h2>
+        </Cell>
 
-      <motion.header {...reveal} className="mt-14 md:mt-20">
-        <p className="eyebrow">{META?.label ?? "Experience"}</p>
-        <h2 className="mt-4 text-headline font-medium text-text">Internship, competitions, hardware</h2>
-      </motion.header>
-
-      <ol className="mt-12 md:mt-16">
-        {experience.map((entry) => (
-          <Entry key={entry.id} entry={entry} />
+        {experience.map((entry, index) => (
+          <Fragment key={entry.id}>
+            <Entry entry={entry} order={index + 1} />
+          </Fragment>
         ))}
-      </ol>
+      </Grid>
     </section>
   );
 }

@@ -43,7 +43,7 @@ export function LazyMount({ minHeight, label, children }: LazyMountProps) {
     <div
       ref={ref}
       style={{ minHeight }}
-      className="card flex items-center justify-center p-6"
+      className="flex items-center justify-center bg-surface p-6"
     >
       <p className="eyebrow">{label}</p>
     </div>
@@ -53,7 +53,7 @@ export function LazyMount({ minHeight, label, children }: LazyMountProps) {
 /** The `loading` state `next/dynamic` shows while a chunk downloads. */
 export function InteractiveLoading({ minHeight, label }: { minHeight: string; label: string }) {
   return (
-    <div style={{ minHeight }} className="card flex items-center justify-center p-6">
+    <div style={{ minHeight }} className="flex items-center justify-center bg-surface p-6">
       <p className="eyebrow animate-pulse calm:animate-none">{label}</p>
     </div>
   );

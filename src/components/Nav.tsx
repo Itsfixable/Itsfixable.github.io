@@ -124,58 +124,46 @@ export function Nav() {
         Skip to content
       </a>
 
+      {/* A Mondrian bar: every item is a cell between black rules. The
+          current section fills blue; hovering fills yellow. */}
       <nav
         aria-label="Primary"
-        className={`border-b-[3px] transition-[background-color,border-color,backdrop-filter] duration-300 ${
-          condensed
-            ? "border-ink bg-bg/90 backdrop-blur-xl calm:bg-bg calm:backdrop-blur-none"
-            : "border-transparent bg-transparent"
-        }`}
+        className={`border-b-[length:var(--rule)] border-ink bg-bg ${condensed ? "shadow-[0_6px_0_0_rgba(17,17,17,0.06)]" : ""}`}
       >
-        <div
-          className={`shell flex items-center gap-2 transition-[height] duration-300 ${
-            condensed ? "h-12 md:h-14" : "h-14 md:h-18"
-          }`}
-        >
+        <div className="shell flex h-12 items-stretch md:h-14">
           <a
             href="#hero"
             onClick={jump("hero")}
             aria-label={`${profile.name} — back to top`}
-            className="flex shrink-0 items-center"
+            className="flex shrink-0 items-center border-x-[length:var(--rule)] border-ink px-4 text-sm font-semibold text-text transition-colors hover:bg-m-yellow sm:px-5"
           >
-            <span className="text-sm font-medium text-text">{profile.name}</span>
+            {profile.name}
           </a>
 
           {/* The section labels only fit from lg up; below that they collapse
               rather than overflow, and the page is navigated by scrolling. */}
-          <ul className="ml-4 hidden min-w-0 items-center lg:flex">
+          <ul className="hidden min-w-0 items-stretch lg:flex">
             {navSections.map((section) => {
               const active = activeId === section.id;
               return (
-                <li key={section.id} className="min-w-0">
+                <li key={section.id} className="flex min-w-0 border-r-[length:var(--rule)] border-ink">
                   <a
                     href={`#${section.id}`}
                     onClick={jump(section.id)}
                     aria-current={active ? "true" : undefined}
-                    className={`relative inline-flex h-8 items-center whitespace-nowrap rounded-none px-2 text-sm transition-colors xl:px-3 ${
-                      active ? "text-accent" : "text-muted hover:text-text"
+                    className={`flex items-center whitespace-nowrap px-3 text-sm transition-colors xl:px-4 ${
+                      active ? "bg-m-blue font-medium text-white" : "text-text hover:bg-m-yellow"
                     }`}
                   >
                     {section.label}
-                    {active ? (
-                      <span
-                        aria-hidden="true"
-                        className="absolute inset-x-2 bottom-0 h-px bg-accent xl:inset-x-3"
-                      />
-                    ) : null}
                   </a>
                 </li>
               );
             })}
           </ul>
 
-          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
-            <ResumeButton />
+          <div className="ml-auto flex shrink-0 items-stretch border-x-[length:var(--rule)] border-ink">
+            <ResumeButton tone="cell" />
           </div>
         </div>
       </nav>
