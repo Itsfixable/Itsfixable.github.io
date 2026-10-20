@@ -19,6 +19,7 @@ import {
   DETAIL_STALE_MS,
   INDUSTRIES,
   LIST_STALE_MS,
+  PAGE_SIZE,
   STAGES,
   accountKey,
   accountsKey,
@@ -68,6 +69,14 @@ const DEFAULT_SORT: SortingState = [{ id: "arr_usd", desc: true }];
 
 /** Hovering this long counts as intent to open, so details get prefetched. */
 const HOVER_INTENT_MS = 150;
+
+/**
+ * Pages that load by themselves as you scroll the table. After that a button
+ * loads each next page, so the table has a real bottom: a visitor scrolling
+ * the page with the pointer over it reaches the end and carries on down the
+ * page, instead of loading all 2,000 rows one page at a time.
+ */
+const AUTO_PAGES = 3;
 
 function useDebouncedValue<T>(value: T, ms: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -196,11 +205,13 @@ function Lab() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { hasNextPage, isFetchingNextPage, isPlaceholderData, fetchNextPage } = query;
   const nextPageFailed = query.isFetchNextPageError;
+  const pagesLoaded = query.data?.pages.length ?? 0;
+  const autoLoading = pagesLoaded < AUTO_PAGES;
 
   useEffect(() => {
     const root = scrollRef.current;
     const target = sentinelRef.current;
-    if (!root || !target || !hasNextPage || isPlaceholderData || nextPageFailed) return;
+    if (!root || !target || !hasNextPage || isPlaceholderData || nextPageFailed || !autoLoading) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -210,7 +221,7 @@ function Lab() {
     );
     observer.observe(target);
     return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, isPlaceholderData, nextPageFailed, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, isPlaceholderData, nextPageFailed, autoLoading, fetchNextPage]);
 
   /* ---- Selective loading: prefetch on hover intent, fetch on open -------- */
 
@@ -261,7 +272,7 @@ function Lab() {
       {/* minmax(0,1fr) on phones too: an implicit grid column would grow to
           the wide table's full width and get clipped by the card. */}
       <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_21rem]">
-        <div className="min-w-0 p-5 sm:p-8">
+        <div className="flex min-w-0 flex-col p-5 sm:p-8">
           {/* The title and how to use it live beside the frame, in the section. */}
 
           {/* Controls */}
@@ -306,11 +317,14 @@ function Lab() {
             ) : null}
           </div>
 
-          {/* Table */}
+          {/* Table. A set height (on wide screens it fills down to the bottom
+              of the panel beside it). It scrolls like any scroll box, and
+              once it has stopped loading by itself it hands the wheel back to
+              the page at the bottom. */}
           <div
             ref={scrollRef}
             data-lenis-prevent
-            className="mt-2 h-[26rem] overflow-auto rounded-xl border border-line bg-surface"
+            className="mt-2 h-[26rem] overflow-auto rounded-xl border border-line bg-surface lg:h-auto lg:min-h-[26rem] lg:flex-1 lg:basis-0"
           >
             {query.isPending ? (
               <SkeletonRows />
@@ -423,9 +437,17 @@ function Lab() {
                   </button>
                 </span>
               ) : isFetchingNextPage ? (
-                "Loading 25 more…"
+                `Loading ${PAGE_SIZE} more…`
               ) : rows.length > 0 && !hasNextPage ? (
                 "End of results"
+              ) : hasNextPage && !autoLoading && !isPlaceholderData ? (
+                <button
+                  type="button"
+                  onClick={() => void fetchNextPage()}
+                  className="rounded-none border border-line bg-surface px-3 py-1.5 text-text hover:border-faint"
+                >
+                  Load {PAGE_SIZE} more
+                </button>
               ) : null}
             </div>
           </div>

@@ -63,6 +63,9 @@ function useCacheClock(): number {
   return now;
 }
 
+/** The box each scrolling list sits in. */
+const LIST_BOX = "mt-2 overflow-y-auto border border-line bg-surface";
+
 function StatusChip({ children, className }: { children: React.ReactNode; className: string }) {
   return (
     <span
@@ -186,12 +189,14 @@ export function Inspector() {
         </div>
       </div>
 
+      {/* Both lists have a set height and scroll inside it, so the panel (and
+          the page around it) never changes size as requests come and go. */}
       <div>
         <p className="eyebrow">Query cache</p>
         {queries.length === 0 ? (
-          <p className="mt-3 text-xs text-faint">Empty. Nothing has been fetched yet.</p>
+          <p className={`${LIST_BOX} h-36 px-3 py-3 text-xs text-faint`}>Empty. Nothing has been fetched yet.</p>
         ) : (
-          <ul className="mt-2 divide-y divide-line">
+          <ul data-lenis-prevent className={`${LIST_BOX} h-36 divide-y divide-line px-3`}>
             {queries.map((query) => {
               const status = cacheStatus(query);
               return (
@@ -207,12 +212,12 @@ export function Inspector() {
         )}
       </div>
 
-      <div className="min-h-0">
+      <div>
         <p className="eyebrow">Activity</p>
         {activity.length === 0 ? (
-          <p className="mt-3 text-xs text-faint">Requests and cache hits will show up here.</p>
+          <p className={`${LIST_BOX} h-56 px-3 py-3 text-xs text-faint`}>Requests and cache hits will show up here.</p>
         ) : (
-          <ol data-lenis-prevent className="mt-1 max-h-72 divide-y divide-line overflow-y-auto pr-1">
+          <ol data-lenis-prevent className={`${LIST_BOX} h-56 divide-y divide-line px-3`}>
             {activity.slice(0, 20).map((entry) => (
               <ActivityLine key={entry.id} entry={entry} now={now} />
             ))}
