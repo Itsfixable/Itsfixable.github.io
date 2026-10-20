@@ -28,7 +28,6 @@ const HOVER_UNDERLINE = {
 
 export function Nav() {
   const [activeId, setActiveId] = useState<SectionId | null>(null);
-  const [condensed, setCondensed] = useState(false);
 
   /**
    * Active-section tracking: one IntersectionObserver over the section
@@ -111,38 +110,6 @@ export function Nav() {
     };
   }, []);
 
-  /**
-   * The bar condenses (and picks up its translucent backdrop) once the hero is
-   * behind you. rAF-throttled, passive, and the visual half is expressed with
-   * the `calm:` variant so calm mode gets a flat opaque bar with no blur.
-   */
-  useEffect(() => {
-    let frame = 0;
-
-    const read = () => {
-      frame = 0;
-      const hero = document.getElementById("hero");
-      const heroEnd = hero ? hero.offsetTop + hero.offsetHeight - 160 : 160;
-      setCondensed(window.scrollY > Math.max(72, heroEnd));
-    };
-
-    const onScroll = () => {
-      if (frame === 0) frame = window.requestAnimationFrame(read);
-    };
-
-    // First read is deferred a frame so the effect body never sets state
-    // synchronously (and so layout has settled).
-    frame = window.requestAnimationFrame(read);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-
-    return () => {
-      if (frame !== 0) window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
-
   const jump = (id: SectionId) => (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     scrollToSection(id);
@@ -166,30 +133,30 @@ export function Nav() {
         Skip to content
       </a>
 
-      {/* A Mondrian bar: every item is a cell between black rules. The
-          current section fills blue; hovering fills yellow. */}
+      {/* One black line under the bar, nothing boxed. The current section
+          is underlined in its own colour. */}
       <nav
         aria-label="Primary"
-        className={`border-b-[length:var(--rule)] border-ink bg-bg ${condensed ? "shadow-[0_6px_0_0_rgba(17,17,17,0.06)]" : ""}`}
+        className="border-b-[length:var(--rule)] border-ink bg-bg"
       >
         <div className="shell flex h-12 items-stretch md:h-14">
           <a
             href="#hero"
             onClick={jump("hero")}
             aria-label={`${profile.name} — back to top`}
-            className="flex shrink-0 items-center border-x-[length:var(--rule)] border-ink px-4 text-sm font-semibold text-text transition-colors hover:bg-m-yellow sm:px-5"
+            className="-ml-3 flex shrink-0 items-center px-3 text-sm font-semibold text-text transition-colors hover:bg-m-yellow focus-visible:bg-m-yellow"
           >
             {profile.name}
           </a>
 
           {/* The section labels only fit from lg up; below that they collapse
               rather than overflow, and the page is navigated by scrolling. */}
-          <ul className="hidden min-w-0 items-stretch lg:flex">
+          <ul className="ml-6 hidden min-w-0 items-stretch gap-1 lg:flex xl:ml-10">
             {navSections.map((section) => {
               const active = activeId === section.id;
               const tone = section.tone ?? "blue";
               return (
-                <li key={section.id} className="flex min-w-0 border-r-[length:var(--rule)] border-ink">
+                <li key={section.id} className="flex min-w-0">
                   <a
                     href={`#${section.id}`}
                     onClick={jump(section.id)}
@@ -206,8 +173,8 @@ export function Nav() {
             })}
           </ul>
 
-          <div className="ml-auto flex shrink-0 items-stretch border-x-[length:var(--rule)] border-ink">
-            <ResumeButton tone="cell" />
+          <div className="ml-auto flex shrink-0 items-center">
+            <ResumeButton tone="ghost" />
           </div>
         </div>
       </nav>

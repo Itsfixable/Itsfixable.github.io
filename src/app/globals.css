@@ -196,14 +196,6 @@
   }
 }
 
-/* A Mondrian painting: black grid whose gaps and frame are the thick rules. */
-@utility mondrian-grid {
-  display: grid;
-  gap: var(--rule);
-  background-color: var(--color-ink);
-  border: var(--rule) solid var(--color-ink);
-}
-
 /* Subtle card surface. */
 @utility card {
   background-color: var(--color-surface);

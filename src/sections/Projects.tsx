@@ -4,23 +4,23 @@ import { Fragment } from "react";
 import dynamic from "next/dynamic";
 import { projects, type Project } from "@/data/profile";
 import { sectionMeta } from "@/lib/sections";
-import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
+import { InteractiveLoading, LazyMount, usePreload } from "@/interactives/LazyMount";
 import { Body, Bullets, Stack } from "@/components/mondrian/Content";
 import { Columns, Fact, Row, SectionFrame } from "@/components/mondrian/SectionFrame";
 import { ProjectIntro } from "./_projects/ProjectIntro";
 
 const META = sectionMeta("projects");
 
-const PLAYGROUND_HEIGHT = "36rem";
+/** Measured heights of the playground at each breakpoint. */
+const PLAYGROUND_RESERVE = "min-h-[61rem] md:min-h-[41rem] xl:min-h-[38rem]";
 
 /** Korean Quest's tracing and syllable builder, fetched as you scroll near. */
-const HangulPlayground = dynamic(
-  () => import("@/interactives/hangul/HangulPlayground").then((module) => module.HangulPlayground),
-  {
-    ssr: false,
-    loading: () => <InteractiveLoading minHeight={PLAYGROUND_HEIGHT} label="Loading Korean Quest" />,
-  },
-);
+const loadHangulPlayground = () =>
+  import("@/interactives/hangul/HangulPlayground").then((module) => module.HangulPlayground);
+const HangulPlayground = dynamic(loadHangulPlayground, {
+  ssr: false,
+  loading: () => <InteractiveLoading reserve={PLAYGROUND_RESERVE} label="Loading Korean Quest" />,
+});
 
 const STATUS: Record<Project["status"], string> = {
   live: "Live",
@@ -37,13 +37,13 @@ const STATUS: Record<Project["status"], string> = {
 const listed = projects.filter((project) => !project.caseStudy);
 
 export function Projects() {
+  usePreload(loadHangulPlayground);
   const [first] = listed;
   if (!first) return null;
 
   return (
     <SectionFrame
       id="projects"
-      entrance="iris"
       railLabel="Project"
       title={listed.length === 1 ? first.name : META.title}
       intro={listed.length === 1 ? <ProjectIntro project={first} tone={META.tone ?? "yellow"} /> : null}
@@ -59,12 +59,22 @@ export function Projects() {
             </Row>
           ) : null}
 
-          <Row label="Details" flush>
+          <Row label="Details">
             <Columns>
-              <Fact label="Year">{project.year}</Fact>
-              <Fact label="Role">{project.role}</Fact>
-              <Fact label="Status">{STATUS[project.status]}</Fact>
-              {project.recognition ? <Fact label="Recognition">{project.recognition}</Fact> : null}
+              <Fact label="Year" index={0}>
+                {project.year}
+              </Fact>
+              <Fact label="Role" index={1}>
+                {project.role}
+              </Fact>
+              <Fact label="Status" index={2}>
+                {STATUS[project.status]}
+              </Fact>
+              {project.recognition ? (
+                <Fact label="Recognition" index={3}>
+                  {project.recognition}
+                </Fact>
+              ) : null}
             </Columns>
           </Row>
 
@@ -74,8 +84,8 @@ export function Projects() {
           </Row>
 
           {project.playable === "hangul" ? (
-            <Row label="Try it" flush>
-              <LazyMount minHeight={PLAYGROUND_HEIGHT} label="Learn some Hangul">
+            <Row label="Try it" framed>
+              <LazyMount reserve={PLAYGROUND_RESERVE} label="Learn some Hangul">
                 <HangulPlayground />
               </LazyMount>
             </Row>

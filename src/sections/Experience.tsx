@@ -5,21 +5,20 @@ import dynamic from "next/dynamic";
 import { experience, type ExperienceEntry } from "@/data/profile";
 import { Row, SectionFrame } from "@/components/mondrian/SectionFrame";
 import { Bullets, Stack } from "@/components/mondrian/Content";
-import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
+import { InteractiveLoading, LazyMount, usePreload } from "@/interactives/LazyMount";
 
-const LAB_HEIGHT = "44rem";
+/** Measured heights of the lab at each breakpoint (it wraps more when narrow). */
+const LAB_RESERVE = "min-h-[84rem] md:min-h-[74rem] lg:min-h-[52rem] xl:min-h-[45rem]";
 
 /**
  * The lab pulls in supabase-js and TanStack Table, so it is split into its own
  * chunk and only requested once a visitor scrolls near it.
  */
-const QueryLab = dynamic(
-  () => import("@/interactives/query-lab/QueryLab").then((module) => module.QueryLab),
-  {
-    ssr: false,
-    loading: () => <InteractiveLoading minHeight={LAB_HEIGHT} label="Loading the Query lab" />,
-  },
-);
+const loadQueryLab = () => import("@/interactives/query-lab/QueryLab").then((module) => module.QueryLab);
+const QueryLab = dynamic(loadQueryLab, {
+  ssr: false,
+  loading: () => <InteractiveLoading reserve={LAB_RESERVE} label="Loading the Query lab" />,
+});
 
 function EntryBody({ entry }: { entry: ExperienceEntry }) {
   return (
@@ -34,16 +33,18 @@ function EntryBody({ entry }: { entry: ExperienceEntry }) {
 }
 
 export function Experience() {
+  usePreload(loadQueryLab);
+
   return (
-    <SectionFrame id="experience" entrance="split" title="Internship, competitions, hardware">
+    <SectionFrame id="experience" title="Internship, competitions, hardware">
       {experience.map((entry) => (
         <Fragment key={entry.id}>
           <Row label={entry.when}>
             <EntryBody entry={entry} />
           </Row>
           {entry.demo === "query-lab" ? (
-            <Row label="Try it" flush>
-              <LazyMount minHeight={LAB_HEIGHT} label="Query lab">
+            <Row label="Try it" framed>
+              <LazyMount reserve={LAB_RESERVE} label="Query lab">
                 <QueryLab />
               </LazyMount>
             </Row>

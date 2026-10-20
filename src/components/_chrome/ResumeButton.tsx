@@ -14,8 +14,8 @@ export const resumeAvailable: boolean = resume.available && !isPlaceholder(resum
 export const resumeUnavailableReason = `${resume.label} is not uploaded yet — its link in src/data/profile.ts is still [placeholder].`;
 
 type ResumeButtonProps = {
-  /** "solid" is the accent fill; "cell" fills a Mondrian nav cell in yellow. */
-  tone?: "solid" | "ghost" | "cell";
+  /** "solid" is the accent fill; "ghost" is a white framed box that fills yellow. */
+  tone?: "solid" | "ghost";
   size?: "sm" | "md";
   className?: string;
 };
@@ -23,7 +23,7 @@ type ResumeButtonProps = {
 export function ResumeButton({ tone = "ghost", size = "sm", className = "" }: ResumeButtonProps) {
   const shape = "inline-flex shrink-0 items-center gap-2 rounded-none font-medium transition-colors";
   const sizing =
-    tone === "cell" ? "h-full px-4 text-sm sm:px-6" : size === "sm" ? "h-9 px-2.5 text-sm sm:px-3.5" : "h-11 px-5 text-base";
+    size === "sm" ? "h-9 px-2.5 text-sm sm:px-3.5" : "h-11 px-5 text-base";
   // The label always shows; only the secondary badge/arrow drops out at 375px,
   // so the nav never crowds and the control is never a mystery icon.
   const trailing = "hidden shrink-0 sm:inline-flex";
@@ -56,9 +56,7 @@ export function ResumeButton({ tone = "ghost", size = "sm", className = "" }: Re
       className={`${shape} ${sizing} ${
         tone === "solid"
           ? "border-2 border-ink bg-accent text-accent-ink hover:bg-accent-dim"
-          : tone === "cell"
-            ? "bg-surface text-ink hover:bg-m-yellow focus-visible:bg-m-yellow"
-            : "border-2 border-ink bg-surface text-text hover:bg-m-yellow"
+          : "border-2 border-ink bg-surface text-text hover:bg-m-yellow focus-visible:bg-m-yellow"
       } ${className}`}
     >
       <IconFile className="shrink-0" />

@@ -3,117 +3,133 @@
 import type { ReactNode } from "react";
 import { scrollToSection } from "@/lib/scroll";
 import { nextSection, sectionMeta, type SectionId } from "@/lib/sections";
-import { Cell, Grid, HOVER_FILL, Swatch, type Entrance } from "./Grid";
+import { Block, Drawing, Frame, Line, Rise } from "./Drawn";
+import { HOVER_FILL, Swatch } from "./tone";
 
 /**
- * The one template every section uses, so the page reads as a single
- * organised painting rather than six arrangements:
+ * The one template every section uses. The grid is still there, but only
+ * fragments of its lines are drawn; everything else sits on open paper.
  *
- *   ┌─────────────┬──────────────────────────────┐
- *   │ ■ 02        │ Section title                │  header row
- *   │ Experience  │ intro / links                │
- *   ├─────────────┼──────────────────────────────┤
- *   │ Row label   │ row content                  │  ...rows
- *   ├─────────────┼──────────────────────────────┤
- *   │ Next        │ ■ 03  EcoPulse            ↓  │  the way on
- *   └─────────────┴──────────────────────────────┘
+ *   ██━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━   a line across, a colour block
+ *   02          ┃ Section title                where it starts, and a short
+ *   Experience  ┃ intro                         line dropped from it
  *
- * The page runs on one column system: a 14rem rail plus four equal content
- * columns (`Columns`), so every vertical line continues straight down the
- * page, hero included. The section's one colour is its square, used again on
- * the nav and as the "Next" hover fill. On phones the rail labels sit above
- * their content as thin header strips and the four columns become two.
+ *   Row label     row content                  ...rows, on open paper
+ *
+ *   Try it      ┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓   only things you can play with
+ *               ┃ interactive              ┃   get a full frame
+ *               ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ *
+ *               [■ Next: 03 EcoPulse ↓]
+ *
+ * Every section, and the hero, shares the same two columns: a 14rem label
+ * column and the content column. On phones they stack.
  */
 
-/** The rail width every section (and the hero) shares. */
-export const RAIL = "lg:grid-cols-[14rem_minmax(0,1fr)]";
+/** The two columns every section (and the hero) shares. */
+export const COLUMNS = "grid grid-cols-1 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-x-12";
+
+/** Where the dropped vertical line sits: centred in the gap between the columns. */
+export const DROP_X = "left-[calc(14rem+1.5rem-var(--rule)/2)]";
 
 type SectionFrameProps = {
   id: SectionId;
-  entrance: Entrance;
-  /** Overrides the nav label in the rail (e.g. "Case study"). */
+  /** Overrides the nav label beside the colour block (e.g. "Case study"). */
   railLabel?: string;
   title: ReactNode;
-  /** Shown under the title in the header cell. */
+  /** Shown under the title. */
   intro?: ReactNode;
   children: ReactNode;
 };
 
-export function SectionFrame({ id, entrance, railLabel, title, intro, children }: SectionFrameProps) {
+export function SectionFrame({ id, railLabel, title, intro, children }: SectionFrameProps) {
   const meta = sectionMeta(id);
   const next = nextSection(id);
 
   return (
-    <section id={id} className="shell">
-      <Grid joined entrance={entrance} className={`grid-cols-1 ${RAIL}`}>
-        {/* Header */}
-        <Cell order={0} className="flex items-center gap-3 px-5 py-4 lg:flex-col lg:items-start lg:justify-end lg:gap-2 lg:p-8">
-          {meta.tone ? <Swatch tone={meta.tone} className="lg:size-4" /> : null}
-          <span className="font-mono text-xs tabular-nums text-faint">{meta.number}</span>
-          <span className="eyebrow !text-ink">{railLabel ?? meta.label}</span>
-        </Cell>
-        <Cell order={1} className="p-5 sm:p-8 lg:p-10">
-          <h2 className="text-headline font-semibold">{title}</h2>
-          {intro ? <div className="mt-5">{intro}</div> : null}
-        </Cell>
+    <section id={id} className="shell pt-24 md:pt-36">
+      {/* The opening: line across, T dropped from it, colour into the corner. */}
+      <Drawing className={`relative gap-y-6 pt-[var(--rule)] ${COLUMNS}`}>
+        <Line duration={0.9} className="absolute inset-x-0 top-0 h-[var(--rule)]" />
+        <Line axis="y" at={0.5} duration={0.6} className={`absolute top-0 bottom-0 hidden w-[var(--rule)] lg:block ${DROP_X}`} />
 
-        {children}
+        <div className="flex items-center gap-4 lg:flex-col lg:items-start lg:gap-4">
+          {meta.tone ? <Block tone={meta.tone} at={0.65} className="size-8 shrink-0 lg:size-12" /> : null}
+          <Rise at={0.3} className="flex items-baseline gap-3 lg:flex-col lg:gap-1.5">
+            <span className="font-mono text-xs tabular-nums text-faint">{meta.number}</span>
+            <span className="eyebrow !text-ink">{railLabel ?? meta.label}</span>
+          </Rise>
+        </div>
 
-        {/* The way on */}
-        <Cell className="hidden px-8 py-6 lg:flex lg:items-center">
-          <span className="eyebrow">{next ? "Next" : "End"}</span>
-        </Cell>
-        <Cell>
+        <div className="lg:pt-10 lg:pb-4">
+          <Rise at={0.35}>
+            <h2 className="text-headline font-semibold">{title}</h2>
+          </Rise>
+          {intro ? (
+            <Rise at={0.45} className="mt-5">
+              {intro}
+            </Rise>
+          ) : null}
+        </div>
+      </Drawing>
+
+      <div className="mt-16 flex flex-col gap-16 md:mt-24 md:gap-24">{children}</div>
+
+      {/* The way on */}
+      <div className={`mt-16 md:mt-24 ${COLUMNS}`}>
+        <div className="hidden lg:block" />
+        <div>
           <button
             type="button"
             onClick={() => scrollToSection(next ? next.id : "hero")}
-            className={`group flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition-colors duration-200 sm:px-8 ${
-              HOVER_FILL[next?.tone ?? "yellow"]
+            className={`group inline-flex items-center gap-3 border-2 border-ink bg-surface px-5 py-3 text-sm font-medium transition-colors duration-200 ${
+              HOVER_FILL[next?.tone ?? "black"]
             }`}
           >
-            <span className="flex items-center gap-3">
-              {next?.tone ? <Swatch tone={next.tone} className="group-hover:bg-current" /> : null}
-              {next ? <span className="font-mono text-xs tabular-nums opacity-70">{next.number}</span> : null}
-              <span className="text-lg font-semibold">{next ? next.label : "Back to the top"}</span>
-            </span>
+            {next?.tone ? <Swatch tone={next.tone} className="group-hover:bg-current group-focus-visible:bg-current" /> : null}
+            <span>{next ? `Next: ${next.label}` : "Back to the top"}</span>
             <span
               aria-hidden="true"
-              className="text-lg transition-transform duration-200 group-hover:translate-y-0.5 calm:group-hover:translate-y-0"
+              className="transition-transform duration-200 group-hover:translate-y-0.5 calm:group-hover:translate-y-0"
             >
               {next ? "↓" : "↑"}
             </span>
           </button>
-        </Cell>
-      </Grid>
+        </div>
+      </div>
     </section>
   );
 }
 
-/** The four content columns, nested inside a row so their lines align page-wide. */
-export function Columns({ children }: { children: ReactNode }) {
-  return <div className="mondrian-grid h-full grid-cols-2 border-0 lg:grid-cols-4">{children}</div>;
+/**
+ * One labelled row inside a section. `framed` puts the content in a drawn
+ * frame; it is for interactives only.
+ */
+export function Row({ label, children, framed = false }: { label: ReactNode; children: ReactNode; framed?: boolean }) {
+  return (
+    <Drawing className={`gap-y-4 ${COLUMNS}`}>
+      <Rise className="lg:pt-1">
+        <div className="eyebrow">{label}</div>
+      </Rise>
+      {framed ? <Frame>{children}</Frame> : <Rise at={0.08}>{children}</Rise>}
+    </Drawing>
+  );
 }
 
-/** A label/value pair in one of the four columns. */
-export function Fact({ label, children }: { label: string; children: ReactNode }) {
+/** Four even columns inside the content column (two on phones). */
+export function Columns({ children }: { children: ReactNode }) {
+  return <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-x-8">{children}</div>;
+}
+
+/** A label/value pair under a thin line that ticks in, left to right, by `index`. */
+export function Fact({ label, index = 0, children }: { label: string; index?: number; children: ReactNode }) {
   return (
-    <Cell className="p-5 sm:p-8">
+    <div className="relative pt-4">
+      <Line at={0.15 + index * 0.1} duration={0.6} className="absolute inset-x-0 top-0 h-0.5" />
       <dl>
         <dt className="eyebrow">{label}</dt>
         <dd className="mt-2 text-base">{children}</dd>
       </dl>
-    </Cell>
-  );
-}
-
-/** One label + content row inside a section. `flush` drops the content padding (for interactives). */
-export function Row({ label, children, flush = false }: { label: ReactNode; children: ReactNode; flush?: boolean }) {
-  return (
-    <>
-      <Cell className="px-5 py-3 lg:p-8">
-        <div className="eyebrow">{label}</div>
-      </Cell>
-      <Cell className={flush ? "" : "p-5 sm:p-8"}>{children}</Cell>
-    </>
+    </div>
   );
 }

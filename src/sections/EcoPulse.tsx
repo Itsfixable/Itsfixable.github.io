@@ -7,18 +7,18 @@ import { Body, Stack } from "@/components/mondrian/Content";
 import { Columns, Fact, Row, SectionFrame } from "@/components/mondrian/SectionFrame";
 import { MetricCounter } from "./_ecopulse/MetricCounter";
 import { ProjectIntro } from "./_projects/ProjectIntro";
-import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
+import { InteractiveLoading, LazyMount, usePreload } from "@/interactives/LazyMount";
 
-const GAME_HEIGHT = "34rem";
+/** Measured heights of the game at each breakpoint. */
+const GAME_RESERVE = "min-h-[83rem] md:min-h-[71rem] lg:min-h-[75rem]";
 
 /** Its own chunk, fetched only when a visitor scrolls near it. */
-const BeatTheSolver = dynamic(
-  () => import("@/interactives/beat-the-solver/BeatTheSolver").then((module) => module.BeatTheSolver),
-  {
-    ssr: false,
-    loading: () => <InteractiveLoading minHeight={GAME_HEIGHT} label="Loading the game" />,
-  },
-);
+const loadBeatTheSolver = () =>
+  import("@/interactives/beat-the-solver/BeatTheSolver").then((module) => module.BeatTheSolver);
+const BeatTheSolver = dynamic(loadBeatTheSolver, {
+  ssr: false,
+  loading: () => <InteractiveLoading reserve={GAME_RESERVE} label="Loading the game" />,
+});
 
 /**
  * The EcoPulse case study, read top to bottom as a story: what it is, the
@@ -39,18 +39,19 @@ const meta: { term: string; value: string }[] = [
 const META = sectionMeta("ecopulse");
 
 export function EcoPulse() {
+  usePreload(loadBeatTheSolver);
+
   return (
     <SectionFrame
       id="ecopulse"
-      entrance="wipe"
       railLabel="Case study"
       title={ecoPulse.project}
       intro={project ? <ProjectIntro project={project} tone={META.tone ?? "red"} /> : null}
     >
-      <Row label="Details" flush>
+      <Row label="Details">
         <Columns>
-          {meta.map((row) => (
-            <Fact key={row.term} label={row.term}>
+          {meta.map((row, index) => (
+            <Fact key={row.term} label={row.term} index={index}>
               {row.value}
             </Fact>
           ))}
@@ -81,8 +82,8 @@ export function EcoPulse() {
         </div>
       </Row>
 
-      <Row label="Try it" flush>
-        <LazyMount minHeight={GAME_HEIGHT} label="Can you match the solver?">
+      <Row label="Try it" framed>
+        <LazyMount reserve={GAME_RESERVE} label="Can you match the solver?">
           <BeatTheSolver />
         </LazyMount>
       </Row>

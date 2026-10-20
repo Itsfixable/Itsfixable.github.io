@@ -5,8 +5,9 @@ import { contact, profile, resume, socials, type Social } from "@/data/profile";
 import { IconArrowUpRight } from "@/components/_chrome/icons";
 import { isPlaceholder } from "@/components/_chrome/Placeholder";
 import { resumeAvailable } from "@/components/_chrome/ResumeButton";
-import { Cell, HOVER_FILL, Swatch, type Tone } from "@/components/mondrian/Grid";
+import { Line } from "@/components/mondrian/Drawn";
 import { Columns, Row, SectionFrame } from "@/components/mondrian/SectionFrame";
+import { HOVER_FILL, Swatch, type Tone } from "@/components/mondrian/tone";
 
 /**
  * Evaluated once at module load. On a static export that is build time on the
@@ -16,7 +17,7 @@ import { Columns, Row, SectionFrame } from "@/components/mondrian/SectionFrame";
 const YEAR = new Date().getFullYear();
 
 /** Each way to reach me has its own colour: a small square, and its fill on hover. */
-const LINK_TONE: Record<string, Exclude<Tone, "paper">> = {
+const LINK_TONE: Record<string, Tone> = {
   email: "red",
   github: "blue",
   linkedin: "yellow",
@@ -61,7 +62,6 @@ export function Contact() {
     <div className="pb-16 md:pb-24">
       <SectionFrame
         id="contact"
-        entrance="rise"
         title={contact.heading}
         intro={
           !isPlaceholder(contact.body) ? (
@@ -69,17 +69,18 @@ export function Contact() {
           ) : null
         }
       >
-        <Row label="Reach me" flush>
+        <Row label="Reach me">
           <Columns>
-            {linked.map(({ social, href }) => {
+            {linked.map(({ social, href }, index) => {
               const isMail = href.startsWith("mailto:");
               const tone = LINK_TONE[social.id] ?? "blue";
               return (
-                <Cell key={social.id}>
+                <div key={social.id} className="relative pt-0.5">
+                  <Line at={0.15 + index * 0.1} duration={0.6} className="absolute inset-x-0 top-0 h-0.5" />
                   <a
                     href={href}
                     {...(isMail ? {} : { target: "_blank", rel: "noreferrer noopener" })}
-                    className={`group flex h-full min-h-32 flex-col justify-between gap-6 p-5 transition-colors duration-200 sm:p-8 ${HOVER_FILL[tone]}`}
+                    className={`group flex h-full min-h-32 flex-col justify-between gap-6 px-4 pt-4 pb-5 transition-colors duration-200 ${HOVER_FILL[tone]}`}
                   >
                     <span className="flex items-center justify-between font-mono text-xs tracking-[0.16em] uppercase">
                       <span className="flex items-center gap-2">
@@ -93,7 +94,7 @@ export function Contact() {
                     </span>
                     {isMail ? null : <span className="sr-only">(opens in a new tab)</span>}
                   </a>
-                </Cell>
+                </div>
               );
             })}
           </Columns>

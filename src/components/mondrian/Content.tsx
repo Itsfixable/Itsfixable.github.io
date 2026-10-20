@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { TechChip } from "@/components/TechChip";
-import { HOVER_FILL, type Tone } from "./Grid";
+import { HOVER_FILL, type Tone } from "./tone";
 
 /**
  * The few pieces of text every section is written with, so a paragraph, a
@@ -56,7 +56,7 @@ export function OutLink({
   detail,
 }: {
   href: string;
-  tone: Exclude<Tone, "paper">;
+  tone: Tone;
   children: ReactNode;
   /** Small grey text after the label, e.g. the host. */
   detail?: string;

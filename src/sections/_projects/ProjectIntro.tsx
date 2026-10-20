@@ -2,13 +2,13 @@
 
 import type { Project } from "@/data/profile";
 import { hostOf, OutLink } from "@/components/mondrian/Content";
-import type { Tone } from "@/components/mondrian/Grid";
+import type { Tone } from "@/components/mondrian/tone";
 
 /**
  * The header of a project section: the one-line pitch, then the ways to see
  * it. The demo fills with the section's colour; the source fills black.
  */
-export function ProjectIntro({ project, tone }: { project: Project; tone: Exclude<Tone, "paper"> }) {
+export function ProjectIntro({ project, tone }: { project: Project; tone: Tone }) {
   return (
     <div className="flex flex-col gap-6">
       <p className="max-w-2xl text-lg leading-relaxed text-muted md:text-xl">{project.tagline}</p>

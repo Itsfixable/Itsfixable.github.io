@@ -13,14 +13,13 @@ export function About() {
   return (
     <SectionFrame
       id="about"
-      entrance="drop"
       title={META.title}
       intro={<p className="max-w-[52ch] text-xl leading-snug text-muted sm:text-2xl">{lead}</p>}
     >
-      <Row label="Facts" flush>
+      <Row label="Facts">
         <Columns>
-          {profile.facts.map((fact) => (
-            <Fact key={fact.label} label={fact.label}>
+          {profile.facts.map((fact, index) => (
+            <Fact key={fact.label} label={fact.label} index={index}>
               <ValueOrPlaceholder value={fact.value} />
             </Fact>
           ))}
