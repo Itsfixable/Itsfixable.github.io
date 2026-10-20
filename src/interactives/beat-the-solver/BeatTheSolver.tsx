@@ -20,6 +20,7 @@ import {
   type ShiftableId,
 } from "./engine";
 import { PlayerBar } from "./PlayerBar";
+import { REQUIRED } from "./rules";
 
 /**
  * Three.js is the heaviest thing on the page, so the island streams in as its
@@ -40,12 +41,9 @@ const PLAY_STEP_MS = 500;
 const START_HOUR = 8;
 
 /**
- * The game's rule, matched to what EcoPulse actually delivered that day: it
- * ran desalination 9 hours and the ice plant 7, pausing one hour of each
- * rather than burn diesel. A search over every schedule shows 178.93 L is the
- * floor at those hours, so EcoPulse's plan is optimal and can only be tied.
+ * EcoPulse's diesel at the hours in `REQUIRED`. A search over every schedule
+ * shows it is the floor, so EcoPulse's plan is optimal and can only be tied.
  */
-const REQUIRED: Record<ShiftableId, number> = { desal: 9, ice: 7 };
 const ECOPULSE_L = 178.93;
 const TIMER_L = simulate(FIXED_SCHEDULE).dieselL;
 
@@ -248,17 +246,8 @@ export function BeatTheSolver() {
 
   return (
     <div className="overflow-hidden bg-surface p-5 sm:p-8">
+      {/* The title and how to play live beside the frame, in the section. */}
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="max-w-[60ch]">
-          <h4 className="text-2xl font-semibold tracking-tight text-text">Can you match the solver?</h4>
-          <p className="mt-3 text-sm leading-relaxed text-muted">
-            You run Ta&rsquo;ū for a day. Run desalination for at least {REQUIRED.desal} hours and the
-            ice plant for {REQUIRED.ice}: click or drag across the hours. Whatever you schedule
-            runs on sun and wind first, then the battery, then the diesel generator. It&rsquo;s the
-            same forecast and the same dispatch code as the real EcoPulse.
-          </p>
-        </div>
-
         {/* Score */}
         <div className="w-full min-w-[15rem] sm:w-auto" aria-live="polite">
           <p className="font-mono text-[0.625rem] tracking-[0.14em] text-faint uppercase">Your diesel</p>

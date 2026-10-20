@@ -4,13 +4,14 @@ import dynamic from "next/dynamic";
 import { ecoPulse, projects } from "@/data/profile";
 import { sectionMeta } from "@/lib/sections";
 import { Body, Stack } from "@/components/mondrian/Content";
-import { Columns, Fact, Row, SectionFrame } from "@/components/mondrian/SectionFrame";
+import { Columns, Fact, Pair, Row, SectionFrame, TryIt } from "@/components/mondrian/SectionFrame";
+import { REQUIRED } from "@/interactives/beat-the-solver/rules";
 import { MetricCounter } from "./_ecopulse/MetricCounter";
 import { ProjectIntro } from "./_projects/ProjectIntro";
 import { InteractiveLoading, LazyMount, usePreload } from "@/interactives/LazyMount";
 
 /** Measured heights of the game at each breakpoint. */
-const GAME_RESERVE = "min-h-[83rem] md:min-h-[71rem] lg:min-h-[75rem]";
+const GAME_RESERVE = "min-h-[67.25rem] md:min-h-[62.75rem] lg:min-h-[66.75rem]";
 
 /** Its own chunk, fetched only when a visitor scrolls near it. */
 const loadBeatTheSolver = () =>
@@ -58,11 +59,21 @@ export function EcoPulse() {
         </Columns>
       </Row>
 
-      <Row label={`01 · ${ecoPulse.problem.title}`}>
-        <Body>{ecoPulse.problem.body}</Body>
-      </Row>
-      <Row label={`02 · ${ecoPulse.approach.title}`}>
-        <Body>{ecoPulse.approach.body}</Body>
+      <Row label="The brief">
+        <Pair>
+          <div>
+            <h3 className="eyebrow !text-ink">01 · {ecoPulse.problem.title}</h3>
+            <div className="mt-3">
+              <Body>{ecoPulse.problem.body}</Body>
+            </div>
+          </div>
+          <div>
+            <h3 className="eyebrow !text-ink">02 · {ecoPulse.approach.title}</h3>
+            <div className="mt-3">
+              <Body>{ecoPulse.approach.body}</Body>
+            </div>
+          </div>
+        </Pair>
       </Row>
       <Row label={`03 · ${ecoPulse.result.title}`}>
         <div className="grid gap-6 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end lg:gap-12">
@@ -82,7 +93,18 @@ export function EcoPulse() {
         </div>
       </Row>
 
-      <Row label="Try it" framed>
+      <Row
+        label="Try it"
+        framed
+        aside={
+          <TryIt title="Can you match the solver?">
+            You run Ta&rsquo;ū for a day. Run desalination for at least {REQUIRED.desal} hours and the ice
+            plant for {REQUIRED.ice}: click or drag across the hours. Whatever you schedule runs on sun and
+            wind first, then the battery, then the diesel generator. It&rsquo;s the same forecast and the
+            same dispatch code as the real EcoPulse.
+          </TryIt>
+        }
+      >
         <LazyMount reserve={GAME_RESERVE} label="Can you match the solver?">
           <BeatTheSolver />
         </LazyMount>

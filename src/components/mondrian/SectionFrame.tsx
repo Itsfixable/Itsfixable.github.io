@@ -17,13 +17,16 @@ import { HOVER_FILL, Swatch } from "./tone";
  *   Row label     row content                  ...rows, on open paper
  *
  *   Try it      ┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓   only things you can play with
- *               ┃ interactive              ┃   get a full frame
- *               ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ *   Its name    ┃ interactive              ┃   get a full frame; its name and
+ *   how to play ┃                          ┃   how to play sit in the label
+ *               ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛   column and stay in view
  *
  *               [■ Next: 03 EcoPulse ↓]
  *
  * Every section, and the hero, shares the same two columns: a 14rem label
- * column and the content column. On phones they stack.
+ * column and the content column. On phones they stack. On wide screens each
+ * row's label sticks below the nav while its row scrolls past, so the label
+ * column is never an empty strip beside a tall row.
  */
 
 /** The two columns every section (and the hero) shares. */
@@ -47,7 +50,7 @@ export function SectionFrame({ id, railLabel, title, intro, children }: SectionF
   const next = nextSection(id);
 
   return (
-    <section id={id} className="shell pt-24 md:pt-36">
+    <section id={id} className="shell pt-20 md:pt-28">
       {/* The opening: line across, T dropped from it, colour into the corner. */}
       <Drawing className={`relative gap-y-6 pt-[var(--rule)] ${COLUMNS}`}>
         <Line duration={0.9} className="absolute inset-x-0 top-0 h-[var(--rule)]" />
@@ -61,7 +64,7 @@ export function SectionFrame({ id, railLabel, title, intro, children }: SectionF
           </Rise>
         </div>
 
-        <div className="lg:pt-10 lg:pb-4">
+        <div className="lg:pt-8 lg:pb-2">
           <Rise at={0.35}>
             <h2 className="text-headline font-semibold">{title}</h2>
           </Rise>
@@ -73,10 +76,10 @@ export function SectionFrame({ id, railLabel, title, intro, children }: SectionF
         </div>
       </Drawing>
 
-      <div className="mt-16 flex flex-col gap-16 md:mt-24 md:gap-24">{children}</div>
+      <div className="mt-12 flex flex-col gap-12 md:mt-16 md:gap-16">{children}</div>
 
       {/* The way on */}
-      <div className={`mt-16 md:mt-24 ${COLUMNS}`}>
+      <div className={`mt-10 md:mt-14 ${COLUMNS}`}>
         <div className="hidden lg:block" />
         <div>
           <button
@@ -101,19 +104,45 @@ export function SectionFrame({ id, railLabel, title, intro, children }: SectionF
   );
 }
 
-/**
- * One labelled row inside a section. `framed` puts the content in a drawn
- * frame; it is for interactives only.
- */
-export function Row({ label, children, framed = false }: { label: ReactNode; children: ReactNode; framed?: boolean }) {
+type RowProps = {
+  label: ReactNode;
+  /** Shown under the label, in the label column (e.g. how to use an interactive). */
+  aside?: ReactNode;
+  children: ReactNode;
+  /** Puts the content in a drawn frame; for interactives only. */
+  framed?: boolean;
+};
+
+/** One labelled row inside a section. */
+export function Row({ label, aside, children, framed = false }: RowProps) {
   return (
     <Drawing className={`gap-y-4 ${COLUMNS}`}>
-      <Rise className="lg:pt-1">
+      <Rise className="lg:sticky lg:top-24 lg:self-start lg:pt-1">
         <div className="eyebrow">{label}</div>
+        {aside ? <div className="mt-3 max-w-prose">{aside}</div> : null}
       </Rise>
       {framed ? <Frame>{children}</Frame> : <Rise at={0.08}>{children}</Rise>}
     </Drawing>
   );
+}
+
+/**
+ * The name and instructions of an interactive, for a row's `aside`: they sit
+ * beside the frame on wide screens and above it on phones.
+ */
+export function TryIt({ title, badge, children }: { title: string; badge?: ReactNode; children: ReactNode }) {
+  return (
+    <>
+      <h3 className="text-xl font-semibold tracking-tight text-text">{title}</h3>
+      <div className="mt-2 text-sm leading-relaxed text-muted">{children}</div>
+      {badge ? <div className="mt-4">{badge}</div> : null}
+    </>
+  );
+}
+
+/** Two halves of a row's content side by side on wide screens, e.g. problem and approach. */
+export function Pair({ children }: { children: ReactNode }) {
+  return <div className="grid gap-10 xl:grid-cols-2 xl:gap-12">{children}</div>;
 }
 
 /** Four even columns inside the content column (two on phones). */

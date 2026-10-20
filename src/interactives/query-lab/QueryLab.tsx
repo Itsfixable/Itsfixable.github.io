@@ -262,24 +262,10 @@ function Lab() {
           the wide table's full width and get clipped by the card. */}
       <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_21rem]">
         <div className="min-w-0 p-5 sm:p-8">
-          {/* Header */}
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h4 className="text-2xl font-semibold tracking-tight text-text">Query lab</h4>
-            </div>
-            <p className="inline-flex items-center gap-2 rounded-none border border-line bg-surface-2 px-3 py-1 font-mono text-[0.625rem] tracking-[0.12em] text-muted uppercase">
-              <span aria-hidden="true" className="size-1.5 rounded-none bg-accent" />
-              Live Supabase Postgres · fictional data
-            </p>
-          </div>
-          <p className="mt-3 max-w-[64ch] text-sm leading-relaxed text-muted">
-            The kind of table I built at Rox: search, filters and sorting run on the server, pages
-            stream in as you scroll, and TanStack Query caches every combination. Scroll, sort,
-            search, hover a row and open it, then watch &ldquo;Under the hood&rdquo;.
-          </p>
+          {/* The title and how to use it live beside the frame, in the section. */}
 
           {/* Controls */}
-          <div className="mt-5 grid gap-2 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)]">
+          <div className="grid gap-2 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)]">
             <label className="sr-only" htmlFor="lab-search">
               Search accounts by name
             </label>

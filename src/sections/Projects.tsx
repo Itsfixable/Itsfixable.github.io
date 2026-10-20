@@ -6,13 +6,13 @@ import { projects, type Project } from "@/data/profile";
 import { sectionMeta } from "@/lib/sections";
 import { InteractiveLoading, LazyMount, usePreload } from "@/interactives/LazyMount";
 import { Body, Bullets, Stack } from "@/components/mondrian/Content";
-import { Columns, Fact, Row, SectionFrame } from "@/components/mondrian/SectionFrame";
+import { Columns, Fact, Pair, Row, SectionFrame, TryIt } from "@/components/mondrian/SectionFrame";
 import { ProjectIntro } from "./_projects/ProjectIntro";
 
 const META = sectionMeta("projects");
 
 /** Measured heights of the playground at each breakpoint. */
-const PLAYGROUND_RESERVE = "min-h-[61rem] md:min-h-[41rem] xl:min-h-[38rem]";
+const PLAYGROUND_RESERVE = "min-h-[58.25rem] md:min-h-[40.75rem] xl:min-h-[38rem]";
 
 /** Korean Quest's tracing and syllable builder, fetched as you scroll near. */
 const loadHangulPlayground = () =>
@@ -79,12 +79,24 @@ export function Projects() {
           </Row>
 
           <Row label="What it is">
-            <Body>{project.blurb}</Body>
-            <Bullets items={project.highlights} className="mt-5" />
+            <Pair>
+              <Body>{project.blurb}</Body>
+              <Bullets items={project.highlights} />
+            </Pair>
           </Row>
 
           {project.playable === "hangul" ? (
-            <Row label="Try it" framed>
+            <Row
+              label="Try it"
+              framed
+              aside={
+                <TryIt title="Learn some Hangul">
+                  Trace a letter and Korean Quest&rsquo;s own grader scores your shape, stroke order and
+                  direction. Or build syllable blocks from a consonant, a vowel and an optional final
+                  consonant.
+                </TryIt>
+              }
+            >
               <LazyMount reserve={PLAYGROUND_RESERVE} label="Learn some Hangul">
                 <HangulPlayground />
               </LazyMount>

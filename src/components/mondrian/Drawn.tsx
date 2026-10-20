@@ -17,9 +17,27 @@ import { FILL, type Tone } from "./tone";
  * browser composites it without repainting the page. Calm mode renders the
  * finished painting with no movement.
  *
+ * Calm has to be bulletproof, because the first render cannot know it: the
+ * server and the first client render both assume full motion, so framer
+ * paints every part in its hidden state before the store switches to calm.
+ * Two guards make sure nothing is ever left hidden:
+ *   - `SHOWN_IN_CALM` forces the finished state in CSS from the very first
+ *     paint (the root layout stamps <html data-motion> before React runs);
+ *   - in calm, both variants are the finished state, so framer settles there.
+ *
  * `at` is seconds after the enclosing `Drawing` starts, so one group reads as
  * one sequence.
  */
+
+const SHOWN_IN_CALM = "calm:opacity-100! calm:transform-none!";
+
+/** Variants that move from `from` to `to`, or sit at `to` throughout in calm mode. */
+function useVariants(from: Record<string, number>, to: Record<string, number>, transition: object) {
+  const calm = useIsCalm();
+  return calm
+    ? { hidden: to, shown: { ...to, transition: { duration: 0 } } }
+    : { hidden: from, shown: { ...to, transition } };
+}
 
 /** A group starts as soon as its top is a little way onto the screen. */
 const IN_VIEW = { once: true, margin: "0px 0px -12% 0px" } as const;
@@ -57,55 +75,41 @@ type LineProps = {
 
 /** A black line that draws itself. */
 export function Line({ axis = "x", reverse = false, at = 0, duration = 0.8, className = "" }: LineProps) {
-  const calm = useIsCalm();
   const origin = axis === "x" ? (reverse ? "100% 50%" : "0% 50%") : reverse ? "50% 100%" : "50% 0%";
-  const from = axis === "x" ? { scaleX: 0 } : { scaleY: 0 };
-  const to = axis === "x" ? { scaleX: 1 } : { scaleY: 1 };
+  const variants = useVariants(
+    axis === "x" ? { scaleX: 0 } : { scaleY: 0 },
+    axis === "x" ? { scaleX: 1 } : { scaleY: 1 },
+    { duration, ease: EASE_IN_OUT, delay: at },
+  );
 
   return (
     <motion.span
       aria-hidden="true"
-      className={`pointer-events-none bg-ink ${className}`}
+      className={`pointer-events-none bg-ink ${SHOWN_IN_CALM} ${className}`}
       style={{ transformOrigin: origin }}
-      variants={
-        calm ? undefined : { hidden: from, shown: { ...to, transition: { duration, ease: EASE_IN_OUT, delay: at } } }
-      }
+      variants={variants}
     />
   );
 }
 
 /** A block of colour that drops down from the line above it. */
 export function Block({ tone, at = 0, className = "" }: { tone: Tone; at?: number; className?: string }) {
-  const calm = useIsCalm();
+  const variants = useVariants({ scaleY: 0 }, { scaleY: 1 }, { duration: 0.55, ease: EASE_OUT, delay: at });
   return (
     <motion.span
       aria-hidden="true"
-      className={`pointer-events-none block ${FILL[tone]} ${className}`}
+      className={`pointer-events-none block ${FILL[tone]} ${SHOWN_IN_CALM} ${className}`}
       style={{ transformOrigin: "50% 0%" }}
-      variants={
-        calm
-          ? undefined
-          : { hidden: { scaleY: 0 }, shown: { scaleY: 1, transition: { duration: 0.55, ease: EASE_OUT, delay: at } } }
-      }
+      variants={variants}
     />
   );
 }
 
 /** Words and other content: fade in while lifting a little. */
 export function Rise({ at = 0, className = "", children }: { at?: number; className?: string; children: ReactNode }) {
-  const calm = useIsCalm();
+  const variants = useVariants({ opacity: 0, y: 14 }, { opacity: 1, y: 0 }, { duration: 0.7, ease: EASE_OUT, delay: at });
   return (
-    <motion.div
-      className={className}
-      variants={
-        calm
-          ? undefined
-          : {
-              hidden: { opacity: 0, y: 14 },
-              shown: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE_OUT, delay: at } },
-            }
-      }
-    >
+    <motion.div className={`${SHOWN_IN_CALM} ${className}`} variants={variants}>
       {children}
     </motion.div>
   );
@@ -113,16 +117,9 @@ export function Rise({ at = 0, className = "", children }: { at?: number; classN
 
 /** Content that should not move (a canvas, a table): fade only. */
 export function Fade({ at = 0, className = "", children }: { at?: number; className?: string; children: ReactNode }) {
-  const calm = useIsCalm();
+  const variants = useVariants({ opacity: 0 }, { opacity: 1 }, { duration: 0.6, ease: "easeOut", delay: at });
   return (
-    <motion.div
-      className={className}
-      variants={
-        calm
-          ? undefined
-          : { hidden: { opacity: 0 }, shown: { opacity: 1, transition: { duration: 0.6, ease: "easeOut", delay: at } } }
-      }
-    >
+    <motion.div className={`${SHOWN_IN_CALM} ${className}`} variants={variants}>
       {children}
     </motion.div>
   );

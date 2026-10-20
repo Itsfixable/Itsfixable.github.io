@@ -3,12 +3,12 @@
 import { Fragment } from "react";
 import dynamic from "next/dynamic";
 import { experience, type ExperienceEntry } from "@/data/profile";
-import { Row, SectionFrame } from "@/components/mondrian/SectionFrame";
+import { Row, SectionFrame, TryIt } from "@/components/mondrian/SectionFrame";
 import { Bullets, Stack } from "@/components/mondrian/Content";
 import { InteractiveLoading, LazyMount, usePreload } from "@/interactives/LazyMount";
 
-/** Measured heights of the lab at each breakpoint (it wraps more when narrow). */
-const LAB_RESERVE = "min-h-[84rem] md:min-h-[74rem] lg:min-h-[52rem] xl:min-h-[45rem]";
+/** Measured heights of the lab at each breakpoint (it stacks into one column when narrow). */
+const LAB_RESERVE = "min-h-[68.5rem] md:min-h-[65.75rem] lg:min-h-[35rem]";
 
 /**
  * The lab pulls in supabase-js and TanStack Table, so it is split into its own
@@ -43,7 +43,25 @@ export function Experience() {
             <EntryBody entry={entry} />
           </Row>
           {entry.demo === "query-lab" ? (
-            <Row label="Try it" framed>
+            <Row
+              label="Try it"
+              framed
+              aside={
+                <TryIt
+                  title="Query lab"
+                  badge={
+                    <p className="inline-flex items-center gap-2 border border-line bg-surface-2 px-3 py-1 font-mono text-[0.625rem] tracking-[0.12em] text-muted uppercase">
+                      <span aria-hidden="true" className="size-1.5 shrink-0 bg-accent" />
+                      Live Supabase Postgres · fictional data
+                    </p>
+                  }
+                >
+                  The kind of table I built at Rox: search, filters and sorting run on the server, pages
+                  stream in as you scroll, and TanStack Query caches every combination. Scroll, sort,
+                  search, hover a row and open it, then watch &ldquo;Under the hood&rdquo;.
+                </TryIt>
+              }
+            >
               <LazyMount reserve={LAB_RESERVE} label="Query lab">
                 <QueryLab />
               </LazyMount>

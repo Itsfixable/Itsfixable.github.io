@@ -21,10 +21,8 @@ export function HangulPlayground() {
 
   return (
     <div className="bg-surface p-5 sm:p-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h4 className="text-2xl font-semibold tracking-tight text-text">Learn some Hangul</h4>
-        </div>
+      {/* The title lives beside the frame, in the section. */}
+      <div className="flex flex-wrap items-end gap-4">
         <div role="tablist" aria-label="Activity" className="flex gap-1 border-b border-line">
           {TABS.map(({ id, label }) => (
             <button

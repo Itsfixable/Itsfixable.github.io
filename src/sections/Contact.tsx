@@ -80,7 +80,7 @@ export function Contact() {
                   <a
                     href={href}
                     {...(isMail ? {} : { target: "_blank", rel: "noreferrer noopener" })}
-                    className={`group flex h-full min-h-32 flex-col justify-between gap-6 px-4 pt-4 pb-5 transition-colors duration-200 ${HOVER_FILL[tone]}`}
+                    className={`group flex h-full min-h-28 flex-col justify-between gap-6 px-4 pt-4 pb-5 transition-colors duration-200 ${HOVER_FILL[tone]}`}
                   >
                     <span className="flex items-center justify-between font-mono text-xs tracking-[0.16em] uppercase">
                       <span className="flex items-center gap-2">
