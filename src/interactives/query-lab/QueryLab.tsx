@@ -70,14 +70,6 @@ const DEFAULT_SORT: SortingState = [{ id: "arr_usd", desc: true }];
 /** Hovering this long counts as intent to open, so details get prefetched. */
 const HOVER_INTENT_MS = 150;
 
-/**
- * Pages that load by themselves as you scroll the table. After that a button
- * loads each next page, so the table has a real bottom: a visitor scrolling
- * the page with the pointer over it reaches the end and carries on down the
- * page, instead of loading all 2,000 rows one page at a time.
- */
-const AUTO_PAGES = 3;
-
 function useDebouncedValue<T>(value: T, ms: number): T {
   const [debounced, setDebounced] = useState(value);
   useEffect(() => {
@@ -205,23 +197,25 @@ function Lab() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { hasNextPage, isFetchingNextPage, isPlaceholderData, fetchNextPage } = query;
   const nextPageFailed = query.isFetchNextPageError;
-  const pagesLoaded = query.data?.pages.length ?? 0;
-  const autoLoading = pagesLoaded < AUTO_PAGES;
 
   useEffect(() => {
     const root = scrollRef.current;
     const target = sentinelRef.current;
-    if (!root || !target || !hasNextPage || isPlaceholderData || nextPageFailed || !autoLoading) return;
+    if (!root || !target || !hasNextPage || isPlaceholderData || nextPageFailed) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting && !isFetchingNextPage) void fetchNextPage();
       },
-      { root, rootMargin: "0px 0px 200px 0px" },
+      // The next page loads once the table actually reaches its bottom, not
+      // before. So it really does stop there while the page loads, and a
+      // wheel turn in that moment carries on down the page: a visitor
+      // scrolling past with the pointer over the table is never held by it.
+      { root, rootMargin: "0px" },
     );
     observer.observe(target);
     return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, isPlaceholderData, nextPageFailed, autoLoading, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, isPlaceholderData, nextPageFailed, fetchNextPage]);
 
   /* ---- Selective loading: prefetch on hover intent, fetch on open -------- */
 
@@ -318,9 +312,8 @@ function Lab() {
           </div>
 
           {/* Table. A set height (on wide screens it fills down to the bottom
-              of the panel beside it). It scrolls like any scroll box, and
-              once it has stopped loading by itself it hands the wheel back to
-              the page at the bottom. */}
+              of the panel beside it). It scrolls like any scroll box and
+              loads the next 25 rows each time you reach the bottom. */}
           <div
             ref={scrollRef}
             data-lenis-prevent
@@ -440,14 +433,6 @@ function Lab() {
                 `Loading ${PAGE_SIZE} more…`
               ) : rows.length > 0 && !hasNextPage ? (
                 "End of results"
-              ) : hasNextPage && !autoLoading && !isPlaceholderData ? (
-                <button
-                  type="button"
-                  onClick={() => void fetchNextPage()}
-                  className="rounded-none border border-line bg-surface px-3 py-1.5 text-text hover:border-faint"
-                >
-                  Load {PAGE_SIZE} more
-                </button>
               ) : null}
             </div>
           </div>
