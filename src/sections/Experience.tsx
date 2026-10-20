@@ -8,7 +8,7 @@ import { Bullets, Stack } from "@/components/mondrian/Content";
 import { InteractiveLoading, LazyMount, usePreload } from "@/interactives/LazyMount";
 
 /** Measured heights of the lab at each breakpoint (it stacks into one column when narrow). */
-const LAB_RESERVE = "min-h-[86.5rem] md:min-h-[83.5rem] lg:min-h-[48.25rem]";
+const LAB_RESERVE = "min-h-[86.5rem] sm:min-h-[83.5rem] lg:min-h-[48.25rem]";
 
 /**
  * The lab pulls in supabase-js and TanStack Table, so it is split into its own

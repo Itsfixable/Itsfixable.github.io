@@ -6,6 +6,7 @@ import { About } from "@/sections/About";
 import { Experience } from "@/sections/Experience";
 import { EcoPulse } from "@/sections/EcoPulse";
 import { Projects } from "@/sections/Projects";
+import { TinyGpt } from "@/sections/TinyGpt";
 import { Contact } from "@/sections/Contact";
 
 /**
@@ -23,6 +24,7 @@ export default function Page() {
         <Experience />
         <EcoPulse />
         <Projects />
+        <TinyGpt />
         <Contact />
       </MainContent>
     </>

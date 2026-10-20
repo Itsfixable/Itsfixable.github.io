@@ -11,7 +11,7 @@ import { ProjectIntro } from "./_projects/ProjectIntro";
 import { InteractiveLoading, LazyMount, usePreload } from "@/interactives/LazyMount";
 
 /** Measured heights of the game at each breakpoint. */
-const GAME_RESERVE = "min-h-[67.25rem] md:min-h-[62.75rem] lg:min-h-[66.75rem]";
+const GAME_RESERVE = "min-h-[67.25rem] sm:min-h-[65.625rem] md:min-h-[62.75rem] lg:min-h-[66.75rem]";
 
 /** Its own chunk, fetched only when a visitor scrolls near it. */
 const loadBeatTheSolver = () =>

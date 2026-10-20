@@ -12,7 +12,7 @@ import { ProjectIntro } from "./_projects/ProjectIntro";
 const META = sectionMeta("projects");
 
 /** Measured heights of the playground at each breakpoint. */
-const PLAYGROUND_RESERVE = "min-h-[58.25rem] md:min-h-[40.75rem] xl:min-h-[38rem]";
+const PLAYGROUND_RESERVE = "min-h-[58.25rem] sm:min-h-[40.75rem] xl:min-h-[38rem]";
 
 /** Korean Quest's tracing and syllable builder, fetched as you scroll near. */
 const loadHangulPlayground = () =>

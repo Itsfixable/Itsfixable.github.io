@@ -260,3 +260,23 @@ export const contact = {
   socials,
   resume,
 };
+
+/**
+ * Tiny GPT: Koji's nanoGPT (~/Desktop/nanoGPT), trained on Shakespeare and
+ * run in the browser. The numbers (parameters, layers, steps, loss) come from
+ * the training run itself, in src/interactives/tiny-gpt/model-card.json.
+ */
+export const tinyGpt = {
+  name: "Tiny GPT",
+  tagline: "A small GPT I built in PyTorch and trained on Shakespeare. It writes right here, in your browser.",
+  year: "2026",
+  blurb:
+    "A character-level GPT written in PyTorch, following Andrej Karpathy's “Let's build GPT” lecture. Each piece is its own class: a masked self-attention head, multi-head attention, a feed-forward layer and the residual block that stacks them, on top of token and position embeddings. It reads up to 64 characters and predicts the next one.",
+  highlights: [
+    "Self-attention built by hand from PyTorch primitives",
+    "Trained on Tiny Shakespeare in about two minutes",
+    "Runs here from its exported weights, with no server",
+  ],
+  stack: ["Python", "PyTorch", "TypeScript"],
+  lecture: "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+};

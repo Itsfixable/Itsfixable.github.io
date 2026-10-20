@@ -10,6 +10,7 @@ export type SectionId =
   | "experience"
   | "ecopulse"
   | "projects"
+  | "gpt"
   | "contact";
 
 export type SectionMeta = {
@@ -37,7 +38,8 @@ export const sections: SectionMeta[] = [
   { id: "experience", label: "Experience", title: "Experience", keywords: ["rox", "internship", "intern", "fbla", "hack club", "arduino", "query lab", "supabase", "tanstack"], number: "02", tone: "blue" },
   { id: "ecopulse", label: "EcoPulse", title: "EcoPulse case study", keywords: ["diesel", "dreamhacks", "41", "case study", "game", "solver"], number: "03", tone: "red" },
   { id: "projects", label: "Korean Quest", title: "Korean Quest", keywords: ["project", "korean", "hangul", "tracing", "fbla"], number: "04", tone: "yellow" },
-  { id: "contact", label: "Contact", title: "Contact", keywords: ["email", "hire", "resume", "linkedin"], number: "05", tone: "blue" },
+  { id: "gpt", label: "Tiny GPT", title: "Tiny GPT", keywords: ["gpt", "transformer", "pytorch", "shakespeare", "language model", "attention", "karpathy"], number: "05", tone: "red" },
+  { id: "contact", label: "Contact", title: "Contact", keywords: ["email", "hire", "resume", "linkedin"], number: "06", tone: "blue" },
 ];
 
 export const navSections = sections.filter((s) => !s.navHidden);
