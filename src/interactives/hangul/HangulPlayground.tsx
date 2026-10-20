@@ -20,11 +20,10 @@ export function HangulPlayground() {
   const [tab, setTab] = useState<Tab>("trace");
 
   return (
-    <div className="bg-surface p-4 sm:p-6 lg:p-8">
+    <div className="bg-surface p-5 sm:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="eyebrow">Try it · Korean Quest</p>
-          <h4 className="mt-2 text-2xl font-semibold tracking-tight text-text">Learn some Hangul</h4>
+          <h4 className="text-2xl font-semibold tracking-tight text-text">Learn some Hangul</h4>
         </div>
         <div role="tablist" aria-label="Activity" className="flex gap-1 border-b border-line">
           {TABS.map(({ id, label }) => (

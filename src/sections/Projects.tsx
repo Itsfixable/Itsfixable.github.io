@@ -2,11 +2,12 @@
 
 import { Fragment } from "react";
 import dynamic from "next/dynamic";
-import { projects } from "@/data/profile";
+import { projects, type Project } from "@/data/profile";
 import { sectionMeta } from "@/lib/sections";
 import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
-import { Row, SectionFrame } from "@/components/mondrian/SectionFrame";
-import { ProjectCard } from "./_projects/ProjectCard";
+import { Body, Bullets, Stack } from "@/components/mondrian/Content";
+import { Columns, Fact, Row, SectionFrame } from "@/components/mondrian/SectionFrame";
+import { ProjectIntro } from "./_projects/ProjectIntro";
 
 const META = sectionMeta("projects");
 
@@ -21,25 +22,68 @@ const HangulPlayground = dynamic(
   },
 );
 
+const STATUS: Record<Project["status"], string> = {
+  live: "Live",
+  "in-progress": "In progress",
+  archived: "Archived",
+  physical: "Physical build",
+};
+
 /**
- * Projects without a case study of their own (EcoPulse has one): what it is,
- * then try it. Today that is Korean Quest.
+ * Projects without a case study of their own (EcoPulse has one), laid out in
+ * the same rows as the case study: details, what it is, try it, stack.
+ * Today that is Korean Quest.
  */
 const listed = projects.filter((project) => !project.caseStudy);
 
 export function Projects() {
+  const [first] = listed;
+  if (!first) return null;
+
   return (
-    <SectionFrame id="projects" entrance="iris" railLabel="Project" title={META.title}>
-      {listed.map((project, index) => (
+    <SectionFrame
+      id="projects"
+      entrance="iris"
+      railLabel="Project"
+      title={listed.length === 1 ? first.name : META.title}
+      intro={listed.length === 1 ? <ProjectIntro project={first} tone={META.tone ?? "yellow"} /> : null}
+    >
+      {listed.map((project) => (
         <Fragment key={project.id}>
-          <Row label="Overview" flush>
-            <ProjectCard project={project} index={index} total={listed.length} variant="cell" showName={false} />
+          {listed.length > 1 ? (
+            <Row label="Project">
+              <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{project.name}</h3>
+              <div className="mt-4">
+                <ProjectIntro project={project} tone={META.tone ?? "yellow"} />
+              </div>
+            </Row>
+          ) : null}
+
+          <Row label="Details" flush>
+            <Columns>
+              <Fact label="Year">{project.year}</Fact>
+              <Fact label="Role">{project.role}</Fact>
+              <Fact label="Status">{STATUS[project.status]}</Fact>
+              {project.recognition ? <Fact label="Recognition">{project.recognition}</Fact> : null}
+            </Columns>
           </Row>
+
+          <Row label="What it is">
+            <Body>{project.blurb}</Body>
+            <Bullets items={project.highlights} className="mt-5" />
+          </Row>
+
           {project.playable === "hangul" ? (
             <Row label="Try it" flush>
               <LazyMount minHeight={PLAYGROUND_HEIGHT} label="Learn some Hangul">
                 <HangulPlayground />
               </LazyMount>
+            </Row>
+          ) : null}
+
+          {project.stack.length > 0 ? (
+            <Row label="Stack">
+              <Stack items={project.stack} />
             </Row>
           ) : null}
         </Fragment>

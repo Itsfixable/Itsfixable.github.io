@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { scrollToSection } from "@/lib/scroll";
 import { nextSection, sectionMeta, type SectionId } from "@/lib/sections";
-import { Cell, Grid, Swatch, type Entrance } from "./Grid";
+import { Cell, Grid, HOVER_FILL, Swatch, type Entrance } from "./Grid";
 
 /**
  * The one template every section uses, so the page reads as a single
@@ -18,16 +18,15 @@ import { Cell, Grid, Swatch, type Entrance } from "./Grid";
  *   │ Next        │ ■ 03  EcoPulse            ↓  │  the way on
  *   └─────────────┴──────────────────────────────┘
  *
- * The left rail is the same width everywhere; the section's one colour is
- * its square, used again on the nav and as the "Next" hover fill. On phones
- * the rail labels sit above their content as thin header strips.
+ * The page runs on one column system: a 14rem rail plus four equal content
+ * columns (`Columns`), so every vertical line continues straight down the
+ * page, hero included. The section's one colour is its square, used again on
+ * the nav and as the "Next" hover fill. On phones the rail labels sit above
+ * their content as thin header strips and the four columns become two.
  */
 
-const HOVER_FILL = {
-  red: "hover:bg-m-red hover:text-white focus-visible:bg-m-red focus-visible:text-white",
-  blue: "hover:bg-m-blue hover:text-white focus-visible:bg-m-blue focus-visible:text-white",
-  yellow: "hover:bg-m-yellow focus-visible:bg-m-yellow",
-} as const;
+/** The rail width every section (and the hero) shares. */
+export const RAIL = "lg:grid-cols-[14rem_minmax(0,1fr)]";
 
 type SectionFrameProps = {
   id: SectionId;
@@ -46,7 +45,7 @@ export function SectionFrame({ id, entrance, railLabel, title, intro, children }
 
   return (
     <section id={id} className="shell">
-      <Grid joined entrance={entrance} className="grid-cols-1 lg:grid-cols-[14rem_minmax(0,1fr)]">
+      <Grid joined entrance={entrance} className={`grid-cols-1 ${RAIL}`}>
         {/* Header */}
         <Cell order={0} className="flex items-center gap-3 px-5 py-4 lg:flex-col lg:items-start lg:justify-end lg:gap-2 lg:p-8">
           {meta.tone ? <Swatch tone={meta.tone} className="lg:size-4" /> : null}
@@ -87,6 +86,23 @@ export function SectionFrame({ id, entrance, railLabel, title, intro, children }
         </Cell>
       </Grid>
     </section>
+  );
+}
+
+/** The four content columns, nested inside a row so their lines align page-wide. */
+export function Columns({ children }: { children: ReactNode }) {
+  return <div className="mondrian-grid h-full grid-cols-2 border-0 lg:grid-cols-4">{children}</div>;
+}
+
+/** A label/value pair in one of the four columns. */
+export function Fact({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <Cell className="p-5 sm:p-8">
+      <dl>
+        <dt className="eyebrow">{label}</dt>
+        <dd className="mt-2 text-base">{children}</dd>
+      </dl>
+    </Cell>
   );
 }
 

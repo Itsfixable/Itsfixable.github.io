@@ -2,10 +2,11 @@
 
 import dynamic from "next/dynamic";
 import { ecoPulse, projects } from "@/data/profile";
-import { Cell } from "@/components/mondrian/Grid";
-import { Row, SectionFrame } from "@/components/mondrian/SectionFrame";
-import { TechChip } from "@/components/TechChip";
+import { sectionMeta } from "@/lib/sections";
+import { Body, Stack } from "@/components/mondrian/Content";
+import { Columns, Fact, Row, SectionFrame } from "@/components/mondrian/SectionFrame";
 import { MetricCounter } from "./_ecopulse/MetricCounter";
+import { ProjectIntro } from "./_projects/ProjectIntro";
 import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
 
 const GAME_HEIGHT = "34rem";
@@ -35,12 +36,7 @@ const meta: { term: string; value: string }[] = [
   { term: "Role", value: project?.role ?? "" },
 ].filter((row) => row.value.length > 0);
 
-/** `https://host/path` -> `host/path`, so the link shows where it goes. */
-const demoHost = ecoPulse.demo.replace(/^https?:\/\//, "").replace(/\/$/, "");
-
-function Body({ children }: { children: React.ReactNode }) {
-  return <p className="max-w-[60ch] text-base leading-relaxed text-muted md:text-lg">{children}</p>;
-}
+const META = sectionMeta("ecopulse");
 
 export function EcoPulse() {
   return (
@@ -49,34 +45,16 @@ export function EcoPulse() {
       entrance="wipe"
       railLabel="Case study"
       title={ecoPulse.project}
-      intro={
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          {project ? <p className="max-w-2xl text-lg leading-relaxed text-muted md:text-xl">{project.tagline}</p> : null}
-          <a
-            href={ecoPulse.demo}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex max-w-full shrink-0 items-center gap-3 self-start border-2 border-ink bg-surface px-5 py-3 text-sm font-medium transition-colors duration-200 hover:bg-m-red hover:text-white lg:self-auto"
-          >
-            <span className="whitespace-nowrap">Live demo</span>
-            <span className="sr-only">(opens in a new tab)</span>
-            <span className="truncate font-mono text-xs text-faint group-hover:text-white/80">{demoHost}</span>
-            <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-      }
+      intro={project ? <ProjectIntro project={project} tone={META.tone ?? "red"} /> : null}
     >
       <Row label="Details" flush>
-        <div className="mondrian-grid h-full grid-cols-2 border-0 lg:grid-cols-4">
+        <Columns>
           {meta.map((row) => (
-            <Cell key={row.term} className="p-5 sm:p-6">
-              <dl>
-                <dt className="eyebrow">{row.term}</dt>
-                <dd className="mt-2 text-sm sm:text-base">{row.value}</dd>
-              </dl>
-            </Cell>
+            <Fact key={row.term} label={row.term}>
+              {row.value}
+            </Fact>
           ))}
-        </div>
+        </Columns>
       </Row>
 
       <Row label={`01 · ${ecoPulse.problem.title}`}>
@@ -111,13 +89,7 @@ export function EcoPulse() {
 
       {project && project.stack.length > 0 ? (
         <Row label="Stack">
-          <ul className="flex flex-wrap gap-2">
-            {project.stack.map((item) => (
-              <li key={item}>
-                <TechChip name={item} />
-              </li>
-            ))}
-          </ul>
+          <Stack items={project.stack} />
         </Row>
       ) : null}
     </SectionFrame>

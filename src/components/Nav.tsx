@@ -36,6 +36,8 @@ export function Nav() {
    * on screen; the pick below decides which of them owns the nav, by taking
    * the last one whose top has crossed the nav line. Thresholds are dense so a
    * section taller than the viewport still fires while it scrolls past.
+   * At the very bottom of the page the last section wins, since one shorter
+   * than the screen never reaches the line.
    */
   useEffect(() => {
     const ids = sections.map((section) => section.id);
@@ -46,8 +48,16 @@ export function Nav() {
     if (elements.length === 0) return;
 
     const visible = new Set<string>();
+    const lastId = ids[ids.length - 1];
 
     const pick = () => {
+      const atBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      if (atBottom && visible.has(lastId)) {
+        setActiveId(lastId);
+        return;
+      }
+
       let above: { id: string; top: number } | null = null;
       let below: { id: string; top: number } | null = null;
 
@@ -82,7 +92,23 @@ export function Nav() {
     );
 
     for (const element of elements) observer.observe(element);
-    return () => observer.disconnect();
+
+    // The observer can go quiet before the last few pixels of scroll.
+    let frame = 0;
+    const onScroll = () => {
+      if (frame === 0)
+        frame = window.requestAnimationFrame(() => {
+          frame = 0;
+          pick();
+        });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      if (frame !== 0) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   /**

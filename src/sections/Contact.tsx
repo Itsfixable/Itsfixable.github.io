@@ -1,10 +1,12 @@
 "use client";
 
-import { contact, profile, socials, type Social } from "@/data/profile";
+import { Fragment } from "react";
+import { contact, profile, resume, socials, type Social } from "@/data/profile";
 import { IconArrowUpRight } from "@/components/_chrome/icons";
 import { isPlaceholder } from "@/components/_chrome/Placeholder";
-import { Cell, Swatch, type Tone } from "@/components/mondrian/Grid";
-import { Row, SectionFrame } from "@/components/mondrian/SectionFrame";
+import { resumeAvailable } from "@/components/_chrome/ResumeButton";
+import { Cell, HOVER_FILL, Swatch, type Tone } from "@/components/mondrian/Grid";
+import { Columns, Row, SectionFrame } from "@/components/mondrian/SectionFrame";
 
 /**
  * Evaluated once at module load. On a static export that is build time on the
@@ -14,17 +16,25 @@ import { Row, SectionFrame } from "@/components/mondrian/SectionFrame";
 const YEAR = new Date().getFullYear();
 
 /** Each way to reach me has its own colour: a small square, and its fill on hover. */
-const LINK_TONE: Record<string, Exclude<Tone, "paper" | "black">> = {
+const LINK_TONE: Record<string, Exclude<Tone, "paper">> = {
   email: "red",
   github: "blue",
   linkedin: "yellow",
+  resume: "black",
 };
 
-const HOVER_FILL = {
-  red: "hover:bg-m-red hover:text-white focus-visible:bg-m-red focus-visible:text-white",
-  blue: "hover:bg-m-blue hover:text-white focus-visible:bg-m-blue focus-visible:text-white",
-  yellow: "hover:bg-m-yellow focus-visible:bg-m-yellow",
-} as const;
+/** Lets a long address break before the "@" instead of being cut off. */
+function Breakable({ value }: { value: string }) {
+  const at = value.indexOf("@");
+  if (at <= 0) return <>{value}</>;
+  return (
+    <Fragment>
+      {value.slice(0, at)}
+      <wbr />
+      {value.slice(at)}
+    </Fragment>
+  );
+}
 
 /** The only usable href for a social, or null when it is still a gap. */
 function socialHref(social: Social): string | null {
@@ -35,9 +45,16 @@ function socialHref(social: Social): string | null {
   return null;
 }
 
-const linked = socials
-  .map((social) => ({ social, href: socialHref(social) }))
-  .filter((entry): entry is { social: Social; href: string } => entry.href !== null);
+/** Email, GitHub, LinkedIn, then the résumé: four ways in, one per column. */
+const linked = [
+  ...["email", "github", "linkedin"]
+    .map((id) => socials.find((social) => social.id === id))
+    .filter((social): social is Social => social !== undefined)
+    .map((social) => ({ social, href: socialHref(social) })),
+  ...(resumeAvailable
+    ? [{ social: { id: "resume", label: resume.label, value: "resume.pdf", href: resume.href }, href: resume.href }]
+    : []),
+].filter((entry): entry is { social: Social; href: string } => entry.href !== null);
 
 export function Contact() {
   return (
@@ -53,7 +70,7 @@ export function Contact() {
         }
       >
         <Row label="Reach me" flush>
-          <div className="mondrian-grid h-full grid-cols-1 border-0 sm:grid-cols-3">
+          <Columns>
             {linked.map(({ social, href }) => {
               const isMail = href.startsWith("mailto:");
               const tone = LINK_TONE[social.id] ?? "blue";
@@ -62,7 +79,7 @@ export function Contact() {
                   <a
                     href={href}
                     {...(isMail ? {} : { target: "_blank", rel: "noreferrer noopener" })}
-                    className={`group flex h-full min-h-28 flex-col justify-between gap-6 p-5 transition-colors duration-200 sm:p-6 ${HOVER_FILL[tone]}`}
+                    className={`group flex h-full min-h-32 flex-col justify-between gap-6 p-5 transition-colors duration-200 sm:p-8 ${HOVER_FILL[tone]}`}
                   >
                     <span className="flex items-center justify-between font-mono text-xs tracking-[0.16em] uppercase">
                       <span className="flex items-center gap-2">
@@ -71,13 +88,15 @@ export function Contact() {
                       </span>
                       <IconArrowUpRight className="shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                     </span>
-                    <span className="truncate text-sm font-medium">{social.value}</span>
+                    <span className="text-sm font-medium break-words">
+                      <Breakable value={social.value} />
+                    </span>
                     {isMail ? null : <span className="sr-only">(opens in a new tab)</span>}
                   </a>
                 </Cell>
               );
             })}
-          </div>
+          </Columns>
         </Row>
       </SectionFrame>
 

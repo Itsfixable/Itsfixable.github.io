@@ -170,6 +170,17 @@ export function Cell({ tone = "paper", order = 0, grow = "corner", className = "
   );
 }
 
+/**
+ * The one hover treatment for anything clickable: a white cell that fills
+ * with its primary. Full static strings so Tailwind can see them.
+ */
+export const HOVER_FILL: Record<Exclude<Tone, "paper">, string> = {
+  red: "hover:bg-m-red hover:text-white focus-visible:bg-m-red focus-visible:text-white",
+  blue: "hover:bg-m-blue hover:text-white focus-visible:bg-m-blue focus-visible:text-white",
+  yellow: "hover:bg-m-yellow focus-visible:bg-m-yellow",
+  black: "hover:bg-ink hover:text-white focus-visible:bg-ink focus-visible:text-white",
+};
+
 /** A small solid square of colour, for marking a label or a link. */
 export function Swatch({ tone, className = "" }: { tone: Exclude<Tone, "paper">; className?: string }) {
   return <span aria-hidden="true" className={`inline-block size-2.5 shrink-0 ${FILL[tone]} ${className}`} />;

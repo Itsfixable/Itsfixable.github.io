@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import dynamic from "next/dynamic";
 import { experience, type ExperienceEntry } from "@/data/profile";
 import { Row, SectionFrame } from "@/components/mondrian/SectionFrame";
-import { TechChip } from "@/components/TechChip";
+import { Bullets, Stack } from "@/components/mondrian/Content";
 import { InteractiveLoading, LazyMount } from "@/interactives/LazyMount";
 
 const LAB_HEIGHT = "44rem";
@@ -27,24 +27,8 @@ function EntryBody({ entry }: { entry: ExperienceEntry }) {
       <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{entry.org}</h3>
       <p className="mt-1 text-base text-muted">{entry.role}</p>
 
-      <ul className="mt-5 flex flex-col gap-2.5">
-        {entry.highlights.map((highlight) => (
-          <li key={highlight} className="flex items-baseline gap-3 text-base leading-relaxed">
-            <span aria-hidden="true" className="size-2 shrink-0 translate-y-[-0.1em] bg-ink" />
-            <span>{highlight}</span>
-          </li>
-        ))}
-      </ul>
-
-      {entry.stack.length > 0 ? (
-        <ul className="mt-5 flex flex-wrap gap-2">
-          {entry.stack.map((item) => (
-            <li key={item}>
-              <TechChip name={item} />
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      <Bullets items={entry.highlights} className="mt-5" />
+      <Stack items={entry.stack} className="mt-5" />
     </>
   );
 }

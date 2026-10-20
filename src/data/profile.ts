@@ -36,6 +36,8 @@ export type Project = {
   playable: "hangul" | null;
   /** Has its own long-form section (EcoPulse), so it is not repeated as a card. */
   caseStudy: boolean;
+  /** An award or qualification, shown in the Details row. */
+  recognition: string | null;
 };
 
 export const profile = {
@@ -119,6 +121,7 @@ export const projects: Project[] = [
     status: "live",
     playable: null,
     caseStudy: true,
+    recognition: null,
   },
   {
     id: "korean-quest",
@@ -131,7 +134,6 @@ export const projects: Project[] = [
     highlights: [
       "Playable in the browser, no install",
       "Shipped on GitHub Pages",
-      "Qualified for FBLA nationals",
     ],
     stack: [
       "JavaScript",
@@ -147,6 +149,7 @@ export const projects: Project[] = [
     status: "live",
     playable: "hangul",
     caseStudy: false,
+    recognition: "Qualified for FBLA nationals",
   },
 ];
 

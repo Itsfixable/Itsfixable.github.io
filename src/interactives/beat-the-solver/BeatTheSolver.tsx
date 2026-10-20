@@ -247,11 +247,10 @@ export function BeatTheSolver() {
   }
 
   return (
-    <div className="overflow-hidden bg-surface p-4 sm:p-6 lg:p-8">
+    <div className="overflow-hidden bg-surface p-5 sm:p-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-[60ch]">
-          <p className="eyebrow">Try it · EcoPulse</p>
-          <h4 className="mt-2 text-2xl font-semibold tracking-tight text-text">Can you match the solver?</h4>
+          <h4 className="text-2xl font-semibold tracking-tight text-text">Can you match the solver?</h4>
           <p className="mt-3 text-sm leading-relaxed text-muted">
             You run Ta&rsquo;ū for a day. Run desalination for at least {REQUIRED.desal} hours and the
             ice plant for {REQUIRED.ice}: click or drag across the hours. Whatever you schedule

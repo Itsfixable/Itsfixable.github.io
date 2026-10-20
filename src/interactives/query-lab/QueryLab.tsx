@@ -261,12 +261,11 @@ function Lab() {
       {/* minmax(0,1fr) on phones too: an implicit grid column would grow to
           the wide table's full width and get clipped by the card. */}
       <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_21rem]">
-        <div className="min-w-0 p-4 sm:p-6">
+        <div className="min-w-0 p-5 sm:p-8">
           {/* Header */}
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="eyebrow">Try it · Rox AI</p>
-              <h4 className="mt-2 text-2xl font-semibold tracking-tight text-text">Query lab</h4>
+              <h4 className="text-2xl font-semibold tracking-tight text-text">Query lab</h4>
             </div>
             <p className="inline-flex items-center gap-2 rounded-none border border-line bg-surface-2 px-3 py-1 font-mono text-[0.625rem] tracking-[0.12em] text-muted uppercase">
               <span aria-hidden="true" className="size-1.5 rounded-none bg-accent" />
@@ -446,7 +445,7 @@ function Lab() {
           </div>
         </div>
 
-        <div className="border-t-[length:var(--rule)] border-ink bg-surface-2/60 p-4 sm:p-6 lg:border-t-0 lg:border-l-[length:var(--rule)]">
+        <div className="border-t-[length:var(--rule)] border-ink bg-surface-2/60 p-5 sm:p-8 lg:border-t-0 lg:border-l-[length:var(--rule)]">
           <Inspector />
         </div>
       </div>
