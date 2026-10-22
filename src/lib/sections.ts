@@ -50,7 +50,7 @@ export function sectionMeta(id: SectionId): SectionMeta {
   return meta;
 }
 
-/** The section after `id` in reading order, for each section's "Next" row. */
+/** The section after `id` in reading order (null for the last one). */
 export function nextSection(id: SectionId): SectionMeta | null {
   const index = navSections.findIndex((section) => section.id === id);
   return index >= 0 && index < navSections.length - 1 ? navSections[index + 1] : null;

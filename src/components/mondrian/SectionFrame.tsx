@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { scrollToSection } from "@/lib/scroll";
 import { nextSection, sectionMeta, type SectionId } from "@/lib/sections";
 import { Block, Drawing, Frame, Line, Rise } from "./Drawn";
-import { HOVER_FILL, Swatch } from "./tone";
+import { HOVER_FILL } from "./tone";
 
 /**
  * The one template every section uses. The grid is still there, but only
@@ -21,7 +21,8 @@ import { HOVER_FILL, Swatch } from "./tone";
  *   how to play ┃                          ┃   how to play sit in the label
  *               ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛   column and stay in view
  *
- *               [■ Next: 03 EcoPulse ↓]
+ * Sections run straight into each other (the next one is a scroll away); only
+ * the last ends with a way back to the top.
  *
  * Every section, and the hero, shares the same two columns: a 14rem label
  * column and the content column. On phones they stack. On wide screens each
@@ -47,7 +48,7 @@ type SectionFrameProps = {
 
 export function SectionFrame({ id, railLabel, title, intro, children }: SectionFrameProps) {
   const meta = sectionMeta(id);
-  const next = nextSection(id);
+  const isLast = nextSection(id) === null;
 
   return (
     <section id={id} className="shell pt-20 md:pt-28">
@@ -78,28 +79,26 @@ export function SectionFrame({ id, railLabel, title, intro, children }: SectionF
 
       <div className="mt-12 flex flex-col gap-12 md:mt-16 md:gap-16">{children}</div>
 
-      {/* The way on */}
-      <div className={`mt-10 md:mt-14 ${COLUMNS}`}>
-        <div className="hidden lg:block" />
-        <div>
-          <button
-            type="button"
-            onClick={() => scrollToSection(next ? next.id : "hero")}
-            className={`group inline-flex items-center gap-3 border-2 border-ink bg-surface px-5 py-3 text-sm font-medium transition-colors duration-200 ${
-              HOVER_FILL[next?.tone ?? "black"]
-            }`}
-          >
-            {next?.tone ? <Swatch tone={next.tone} className="group-hover:bg-current group-focus-visible:bg-current" /> : null}
-            <span>{next ? `Next: ${next.label}` : "Back to the top"}</span>
-            <span
-              aria-hidden="true"
-              className="transition-transform duration-200 group-hover:translate-y-0.5 calm:group-hover:translate-y-0"
+      {isLast ? (
+        <div className={`mt-10 md:mt-14 ${COLUMNS}`}>
+          <div className="hidden lg:block" />
+          <div>
+            <button
+              type="button"
+              onClick={() => scrollToSection("hero")}
+              className={`group inline-flex items-center gap-3 border-2 border-ink bg-surface px-5 py-3 text-sm font-medium transition-colors duration-200 ${HOVER_FILL.black}`}
             >
-              {next ? "↓" : "↑"}
-            </span>
-          </button>
+              <span>Back to the top</span>
+              <span
+                aria-hidden="true"
+                className="transition-transform duration-200 group-hover:-translate-y-0.5 calm:group-hover:translate-y-0"
+              >
+                ↑
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
+      ) : null}
     </section>
   );
 }
