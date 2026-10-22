@@ -31,7 +31,8 @@ const STATUS: Record<Project["status"], string> = {
 
 /**
  * Projects without a case study of their own (EcoPulse has one), laid out in
- * the same rows as the case study: details, what it is, try it, stack.
+ * the same rows as the case study: try it first, then details, what it is,
+ * stack.
  * Today that is Korean Quest.
  */
 const listed = projects.filter((project) => !project.caseStudy);
@@ -56,6 +57,24 @@ export function Projects() {
               <div className="mt-4">
                 <ProjectIntro project={project} tone={META.tone ?? "yellow"} />
               </div>
+            </Row>
+          ) : null}
+
+          {project.playable === "hangul" ? (
+            <Row
+              label="Try it"
+              framed
+              aside={
+                <TryIt title="Learn some Hangul">
+                  Trace a letter and Korean Quest&rsquo;s own grader scores your shape, stroke order and
+                  direction. Or build syllable blocks from a consonant, a vowel and an optional final
+                  consonant.
+                </TryIt>
+              }
+            >
+              <LazyMount reserve={PLAYGROUND_RESERVE} label="Learn some Hangul">
+                <HangulPlayground />
+              </LazyMount>
             </Row>
           ) : null}
 
@@ -84,24 +103,6 @@ export function Projects() {
               <Bullets items={project.highlights} />
             </Pair>
           </Row>
-
-          {project.playable === "hangul" ? (
-            <Row
-              label="Try it"
-              framed
-              aside={
-                <TryIt title="Learn some Hangul">
-                  Trace a letter and Korean Quest&rsquo;s own grader scores your shape, stroke order and
-                  direction. Or build syllable blocks from a consonant, a vowel and an optional final
-                  consonant.
-                </TryIt>
-              }
-            >
-              <LazyMount reserve={PLAYGROUND_RESERVE} label="Learn some Hangul">
-                <HangulPlayground />
-              </LazyMount>
-            </Row>
-          ) : null}
 
           {project.stack.length > 0 ? (
             <Row label="Stack">

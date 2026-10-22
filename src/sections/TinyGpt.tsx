@@ -23,8 +23,9 @@ const TinyGptPlayground = dynamic(loadPlayground, {
 const kb = Math.round(card.bytes / 1000);
 
 /**
- * Koji's nanoGPT, in the same rows as the other projects: details, what it
- * is, try it, stack. The playground runs the trained model in the browser.
+ * Koji's nanoGPT, in the same rows as the other projects: try it first, then
+ * details, what it is, stack. The playground runs the trained model in the
+ * browser.
  */
 export function TinyGpt() {
   usePreload(loadPlayground);
@@ -45,6 +46,23 @@ export function TinyGpt() {
         </div>
       }
     >
+      <Row
+        label="Try it"
+        framed
+        aside={
+          <TryIt title="Make it write">
+            Give it the start of a line, or pick a character, and it writes one letter at a time. Each
+            letter is drawn from the odds it shows. Low temperature plays it safe; high temperature gets
+            strange. It only knows {card.vocab_size} characters and has never seen a word list, so
+            everything it spells, it learned from Shakespeare.
+          </TryIt>
+        }
+      >
+        <LazyMount reserve={PLAYGROUND_RESERVE} label="Make it write">
+          <TinyGptPlayground />
+        </LazyMount>
+      </Row>
+
       <Row label="Details">
         <Columns>
           <Fact label="Year" index={0}>
@@ -67,23 +85,6 @@ export function TinyGpt() {
           <Body>{tinyGpt.blurb}</Body>
           <Bullets items={tinyGpt.highlights} />
         </Pair>
-      </Row>
-
-      <Row
-        label="Try it"
-        framed
-        aside={
-          <TryIt title="Make it write">
-            Give it the start of a line, or pick a character, and it writes one letter at a time. Each
-            letter is drawn from the odds it shows. Low temperature plays it safe; high temperature gets
-            strange. It only knows {card.vocab_size} characters and has never seen a word list, so
-            everything it spells, it learned from Shakespeare.
-          </TryIt>
-        }
-      >
-        <LazyMount reserve={PLAYGROUND_RESERVE} label="Make it write">
-          <TinyGptPlayground />
-        </LazyMount>
       </Row>
 
       <Row label="Stack">

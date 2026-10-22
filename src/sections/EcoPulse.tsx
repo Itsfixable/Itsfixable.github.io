@@ -22,8 +22,8 @@ const BeatTheSolver = dynamic(loadBeatTheSolver, {
 });
 
 /**
- * The EcoPulse case study, read top to bottom as a story: what it is, the
- * problem, the approach, the result, then play it yourself.
+ * The EcoPulse case study: play it first, then the story behind it (what
+ * it is, the problem, the approach, the result).
  *
  * Every string comes from `src/data/profile.ts`.
  */
@@ -49,6 +49,23 @@ export function EcoPulse() {
       title={ecoPulse.project}
       intro={project ? <ProjectIntro project={project} tone={META.tone ?? "red"} /> : null}
     >
+      <Row
+        label="Try it"
+        framed
+        aside={
+          <TryIt title="Can you match the solver?">
+            You run Ta&rsquo;ū for a day. Run desalination for at least {REQUIRED.desal} hours and the ice
+            plant for {REQUIRED.ice}: click or drag across the hours. Whatever you schedule runs on sun and
+            wind first, then the battery, then the diesel generator. It&rsquo;s the same forecast and the
+            same dispatch code as the real EcoPulse.
+          </TryIt>
+        }
+      >
+        <LazyMount reserve={GAME_RESERVE} label="Can you match the solver?">
+          <BeatTheSolver />
+        </LazyMount>
+      </Row>
+
       <Row label="Details">
         <Columns>
           {meta.map((row, index) => (
@@ -91,23 +108,6 @@ export function EcoPulse() {
             <p className="mt-3 text-sm text-faint">{ecoPulse.headlineMetric.caption}</p>
           </div>
         </div>
-      </Row>
-
-      <Row
-        label="Try it"
-        framed
-        aside={
-          <TryIt title="Can you match the solver?">
-            You run Ta&rsquo;ū for a day. Run desalination for at least {REQUIRED.desal} hours and the ice
-            plant for {REQUIRED.ice}: click or drag across the hours. Whatever you schedule runs on sun and
-            wind first, then the battery, then the diesel generator. It&rsquo;s the same forecast and the
-            same dispatch code as the real EcoPulse.
-          </TryIt>
-        }
-      >
-        <LazyMount reserve={GAME_RESERVE} label="Can you match the solver?">
-          <BeatTheSolver />
-        </LazyMount>
       </Row>
 
       {project && project.stack.length > 0 ? (
